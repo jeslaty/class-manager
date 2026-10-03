@@ -1,1 +1,232 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>班級經營主控台</title>
 
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, "Noto Sans TC", sans-serif;
+      background:
+        linear-gradient(135deg, #fff8fb 0%, #f7f8ff 50%, #f5f1ff 100%);
+      color: #334155;
+      min-height: 100vh;
+    }
+
+    .page {
+      max-width: 1500px;
+      margin: 0 auto;
+      padding: 18px;
+    }
+
+    .hero {
+      background: rgba(255,255,255,0.82);
+      border-radius: 28px;
+      padding: 34px 24px;
+      text-align: center;
+      box-shadow: 0 8px 28px rgba(80, 70, 120, 0.08);
+      margin-bottom: 28px;
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-size: 42px;
+      font-weight: 800;
+      letter-spacing: 1px;
+    }
+
+    .hero p {
+      margin: 14px 0 0;
+      font-size: 18px;
+      color: #64748b;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .card {
+      min-height: 230px;
+      border-radius: 26px;
+      padding: 28px 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      text-decoration: none;
+      color: #334155;
+      transition: 0.2s ease;
+      box-shadow: 0 8px 24px rgba(90, 80, 130, 0.08);
+      border: 2px solid transparent;
+      cursor: pointer;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 14px 32px rgba(90, 80, 130, 0.13);
+    }
+
+    .pink {
+      background: #fff1f5;
+      border-color: #ffc9d8;
+    }
+
+    .blue {
+      background: #eef7ff;
+      border-color: #b9e1ff;
+    }
+
+    .purple {
+      background: #f4f0ff;
+      border-color: #d8ccff;
+    }
+
+    .icon {
+      font-size: 54px;
+      margin-bottom: 22px;
+    }
+
+    .card h2 {
+      margin: 0;
+      font-size: 27px;
+      font-weight: 800;
+    }
+
+    .card p {
+      margin: 12px 0 0;
+      font-size: 16px;
+      color: #64748b;
+      font-weight: 600;
+    }
+
+    .footer {
+      margin-top: 34px;
+      background: rgba(255,255,255,0.86);
+      border: 1px solid #d8dee9;
+      border-radius: 14px;
+      padding: 14px;
+      text-align: center;
+      color: #475569;
+      font-size: 15px;
+    }
+
+    @media (max-width: 900px) {
+      .grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .hero h1 {
+        font-size: 34px;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .page {
+        padding: 14px;
+      }
+
+      .hero {
+        padding: 28px 18px;
+        border-radius: 22px;
+      }
+
+      .hero h1 {
+        font-size: 28px;
+      }
+
+      .hero p {
+        font-size: 15px;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+        gap: 14px;
+      }
+
+      .card {
+        min-height: 170px;
+        border-radius: 20px;
+      }
+
+      .icon {
+        font-size: 44px;
+        margin-bottom: 14px;
+      }
+
+      .card h2 {
+        font-size: 23px;
+      }
+
+      .card p {
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="page">
+
+    <section class="hero">
+      <h1>🏫 班級經營主控台</h1>
+      <p>點擊下方任一功能大方格，即可快速進入管理系統</p>
+    </section>
+
+    <section class="grid">
+
+      <a href="#" class="card pink">
+        <div class="icon">📖</div>
+        <h2>班級聯絡簿</h2>
+        <p>801導師專屬</p>
+      </a>
+
+      <a href="#" class="card blue">
+        <div class="icon">📚</div>
+        <h2>作業登記專區</h2>
+        <p>各任課班級</p>
+      </a>
+
+      <a href="#" class="card purple">
+        <div class="icon">🪑</div>
+        <h2>座位表管理</h2>
+        <p>排座位 / 印表</p>
+      </a>
+
+      <a href="#" class="card blue">
+        <div class="icon">🎲</div>
+        <h2>學生抽籤學輪播</h2>
+        <p>課堂互動 / 提問</p>
+      </a>
+
+      <a href="#" class="card pink">
+        <div class="icon">⏳</div>
+        <h2>考試倒數計時器</h2>
+        <p>段考 / 倒數提醒</p>
+      </a>
+
+      <a href="#" class="card purple">
+        <div class="icon">➕</div>
+        <h2>新增功能預留區</h2>
+        <p>點擊可擴充</p>
+      </a>
+
+    </section>
+
+    <div class="footer">
+      🔒 班級管理系統
+    </div>
+
+  </div>
+
+</body>
+</html>
