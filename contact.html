@@ -67,7 +67,7 @@
 
     .layout {
       display: grid;
-      grid-template-columns: 300px 1fr;
+      grid-template-columns: 310px 1fr;
       gap: 20px;
       align-items: start;
     }
@@ -91,13 +91,55 @@
       margin-bottom: 10px;
     }
 
+    .today-box {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 16px;
+    }
+
+    .today-label {
+      font-size: 13px;
+      color: #64748b;
+      margin-bottom: 4px;
+    }
+
+    .today-date {
+      font-weight: 800;
+      color: #334155;
+      font-size: 16px;
+    }
+
+    .record-date-box {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 18px;
+    }
+
+    .record-date-label {
+      font-size: 14px;
+      font-weight: 800;
+      color: #1d4ed8;
+      margin-bottom: 8px;
+    }
+
     .date-input {
       width: 100%;
-      border: 1px solid #cbd5e1;
+      border: 1px solid #93c5fd;
       border-radius: 10px;
       padding: 10px 12px;
-      background: #f8fafc;
-      margin-bottom: 18px;
+      background: white;
+      color: #1e293b;
+    }
+
+    .date-help {
+      margin-top: 8px;
+      font-size: 12px;
+      line-height: 1.5;
+      color: #64748b;
     }
 
     .summary-grid {
@@ -169,7 +211,7 @@
     .unfinished-list {
       color: #7f1d1d;
       font-size: 14px;
-      line-height: 1.7;
+      line-height: 1.75;
     }
 
     .right-panel {
@@ -193,6 +235,7 @@
     .small-note {
       color: #64748b;
       font-size: 14px;
+      margin-top: 5px;
     }
 
     .student-grid {
@@ -420,7 +463,10 @@
       <p>家長簽名・生活札記・歷史追蹤</p>
     </div>
 
-    <button class="back-btn" onclick="window.location.href='index.html'">
+    <button
+      class="back-btn"
+      onclick="window.location.href='index.html'"
+    >
       🏠 返回主控台
     </button>
   </div>
@@ -429,49 +475,110 @@
 
     <aside class="panel left-panel">
 
-      <div class="section-title">📅 日期</div>
+      <div class="today-box">
+        <div class="today-label">
+          今天
+        </div>
 
-      <input
-        id="dateInput"
-        class="date-input"
-        type="date"
-      >
+        <div
+          id="todayDisplay"
+          class="today-date"
+        >
+        </div>
+      </div>
 
-      <div class="section-title">📊 今日完成概況</div>
+      <div class="record-date-box">
+
+        <div class="record-date-label">
+          📘 本次檢閱紀錄日期
+        </div>
+
+        <input
+          id="dateInput"
+          class="date-input"
+          type="date"
+        >
+
+        <div class="date-help">
+          系統會自動帶入上一個平日。<br>
+          星期一會自動回到上週五。<br>
+          若遇假日或特殊情況，可自行修改日期。
+        </div>
+
+      </div>
+
+      <div class="section-title">
+        📊 當日完成概況
+      </div>
 
       <div class="summary-grid">
+
         <div class="summary-card blue">
           <div>家長簽名</div>
-          <div id="signedSummary" class="summary-number">0 / 28</div>
+
+          <div
+            id="signedSummary"
+            class="summary-number"
+          >
+            0 / 28
+          </div>
         </div>
 
         <div class="summary-card pink">
           <div>生活札記</div>
-          <div id="journalSummary" class="summary-number">0 / 28</div>
+
+          <div
+            id="journalSummary"
+            class="summary-number"
+          >
+            0 / 28
+          </div>
         </div>
+
       </div>
 
-      <div class="section-title">🔎 顯示方式</div>
+      <div class="section-title">
+        🔎 顯示方式
+      </div>
 
       <div class="filter-group">
-        <button class="filter-btn active" data-filter="all">
+
+        <button
+          class="filter-btn active"
+          data-filter="all"
+        >
           👥 全部學生
         </button>
 
-        <button class="filter-btn" data-filter="incomplete">
+        <button
+          class="filter-btn"
+          data-filter="incomplete"
+        >
           ❗ 只看未完成
         </button>
 
-        <button class="filter-btn" data-filter="complete">
+        <button
+          class="filter-btn"
+          data-filter="complete"
+        >
           ✅ 只看全部完成
         </button>
+
       </div>
 
       <div class="unfinished-box">
-        <div class="unfinished-title">❗ 今日未完成</div>
-        <div id="unfinishedList" class="unfinished-list">
+
+        <div class="unfinished-title">
+          ❗ 當日未完成
+        </div>
+
+        <div
+          id="unfinishedList"
+          class="unfinished-list"
+        >
           載入中...
         </div>
+
       </div>
 
     </aside>
@@ -479,26 +586,53 @@
     <main class="panel right-panel">
 
       <div class="right-header">
+
         <div>
-          <h2 id="recordTitle">今日學生紀錄</h2>
+          <h2 id="recordTitle">
+            學生完成紀錄
+          </h2>
+
           <div class="small-note">
-            點選狀態後會立即保存在這台裝置
+            預設全班皆為已簽、已寫，只需標記未完成學生
           </div>
         </div>
+
       </div>
 
-      <div id="studentGrid" class="student-grid"></div>
+      <div
+        id="studentGrid"
+        class="student-grid"
+      >
+      </div>
 
-      <div id="historyPanel" class="history-panel">
+      <div
+        id="historyPanel"
+        class="history-panel"
+      >
+
         <div class="history-header">
-          <div id="historyTitle" class="history-title"></div>
 
-          <button class="close-history" onclick="closeHistory()">
+          <div
+            id="historyTitle"
+            class="history-title"
+          >
+          </div>
+
+          <button
+            class="close-history"
+            onclick="closeHistory()"
+          >
             ✕ 關閉
           </button>
+
         </div>
 
-        <div id="historyList" class="history-list"></div>
+        <div
+          id="historyList"
+          class="history-list"
+        >
+        </div>
+
       </div>
 
     </main>
@@ -541,11 +675,70 @@
 
   let currentFilter = "all";
 
-  function todayString() {
-    const now = new Date();
-    const offset = now.getTimezoneOffset();
-    const local = new Date(now.getTime() - offset * 60 * 1000);
-    return local.toISOString().split("T")[0];
+  function formatDateLocal(date) {
+    const year = date.getFullYear();
+
+    const month =
+      String(date.getMonth() + 1)
+        .padStart(2, "0");
+
+    const day =
+      String(date.getDate())
+        .padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+  }
+
+  function getPreviousWeekday() {
+    const date = new Date();
+
+    date.setHours(12, 0, 0, 0);
+
+    date.setDate(
+      date.getDate() - 1
+    );
+
+    while (
+      date.getDay() === 0 ||
+      date.getDay() === 6
+    ) {
+      date.setDate(
+        date.getDate() - 1
+      );
+    }
+
+    return date;
+  }
+
+  function getWeekdayText(date) {
+    const weekdays = [
+      "日",
+      "一",
+      "二",
+      "三",
+      "四",
+      "五",
+      "六"
+    ];
+
+    return weekdays[
+      date.getDay()
+    ];
+  }
+
+  function displayDateText(date) {
+    const year =
+      date.getFullYear();
+
+    const month =
+      String(date.getMonth() + 1)
+        .padStart(2, "0");
+
+    const day =
+      String(date.getDate())
+        .padStart(2, "0");
+
+    return `${year}/${month}/${day}（${getWeekdayText(date)}）`;
   }
 
   function storageKey(date) {
@@ -566,7 +759,10 @@
   }
 
   function loadRecords(date) {
-    const raw = localStorage.getItem(storageKey(date));
+    const raw =
+      localStorage.getItem(
+        storageKey(date)
+      );
 
     if (!raw) {
       return createDefaultRecord();
@@ -579,7 +775,10 @@
     }
   }
 
-  function saveRecords(date, records) {
+  function saveRecords(
+    date,
+    records
+  ) {
     localStorage.setItem(
       storageKey(date),
       JSON.stringify(records)
@@ -587,28 +786,52 @@
   }
 
   function getCurrentDate() {
-    return document.getElementById("dateInput").value;
+    return document
+      .getElementById("dateInput")
+      .value;
   }
 
-  function setStatus(studentId, field, value) {
-    const date = getCurrentDate();
-    const records = loadRecords(date);
+  function setStatus(
+    studentId,
+    field,
+    value
+  ) {
+    const date =
+      getCurrentDate();
 
-    records[studentId][field] = value;
+    const records =
+      loadRecords(date);
 
-    saveRecords(date, records);
+    records[studentId][field] =
+      value;
+
+    saveRecords(
+      date,
+      records
+    );
+
     render();
   }
 
   function isComplete(record) {
-    return record.signed && record.journal;
+    return (
+      record.signed &&
+      record.journal
+    );
   }
 
   function render() {
-    const date = getCurrentDate();
-    const records = loadRecords(date);
+    const date =
+      getCurrentDate();
 
-    const grid = document.getElementById("studentGrid");
+    const records =
+      loadRecords(date);
+
+    const grid =
+      document.getElementById(
+        "studentGrid"
+      );
+
     grid.innerHTML = "";
 
     let signedCount = 0;
@@ -617,18 +840,36 @@
     const unfinished = [];
 
     students.forEach(student => {
-      const record = records[student.id];
 
-      if (record.signed) signedCount++;
-      if (record.journal) journalCount++;
+      const record =
+        records[student.id];
 
-      const complete = isComplete(record);
+      if (record.signed) {
+        signedCount++;
+      }
+
+      if (record.journal) {
+        journalCount++;
+      }
+
+      const complete =
+        isComplete(record);
 
       if (!complete) {
+
         const problems = [];
 
-        if (!record.signed) problems.push("家長未簽");
-        if (!record.journal) problems.push("札記未寫");
+        if (!record.signed) {
+          problems.push(
+            "家長未簽"
+          );
+        }
+
+        if (!record.journal) {
+          problems.push(
+            "札記未寫"
+          );
+        }
 
         unfinished.push(
           `${student.id}號 ${student.name}：${problems.join("、")}`
@@ -636,35 +877,56 @@
       }
 
       if (
-        currentFilter === "incomplete" &&
+        currentFilter ===
+          "incomplete" &&
         complete
       ) {
         return;
       }
 
       if (
-        currentFilter === "complete" &&
+        currentFilter ===
+          "complete" &&
         !complete
       ) {
         return;
       }
 
-      const card = document.createElement("div");
+      const card =
+        document.createElement(
+          "div"
+        );
 
       card.className =
         "student-card" +
-        (complete ? "" : " incomplete");
+        (
+          complete
+            ? ""
+            : " incomplete"
+        );
 
       card.innerHTML = `
         <div class="student-name">
-          <strong>${student.id}號 ${student.name}</strong>
-          <span class="status-dot"></span>
+
+          <strong>
+            ${student.id}號
+            ${student.name}
+          </strong>
+
+          <span
+            class="status-dot"
+          ></span>
+
         </div>
 
         <div class="record-row">
-          <div class="record-label">家長簽名</div>
+
+          <div class="record-label">
+            家長簽名
+          </div>
 
           <div class="toggle-group">
+
             <button
               class="toggle-btn good ${record.signed ? "active" : ""}"
               onclick="setStatus(${student.id}, 'signed', true)"
@@ -678,13 +940,19 @@
             >
               ❌ 未簽
             </button>
+
           </div>
+
         </div>
 
         <div class="record-row">
-          <div class="record-label">生活札記</div>
+
+          <div class="record-label">
+            生活札記
+          </div>
 
           <div class="toggle-group">
+
             <button
               class="toggle-btn good ${record.journal ? "active" : ""}"
               onclick="setStatus(${student.id}, 'journal', true)"
@@ -698,7 +966,9 @@
             >
               ❌ 未寫
             </button>
+
           </div>
+
         </div>
 
         <button
@@ -723,24 +993,35 @@
       `${journalCount} / ${students.length}`;
 
     const unfinishedList =
-      document.getElementById("unfinishedList");
+      document.getElementById(
+        "unfinishedList"
+      );
 
-    if (unfinished.length === 0) {
+    if (
+      unfinished.length === 0
+    ) {
       unfinishedList.innerHTML =
-        "🎉 今天全班兩項皆完成";
+        "🎉 全班兩項皆完成";
     } else {
       unfinishedList.innerHTML =
         unfinished.join("<br>");
     }
 
+    const selectedDate =
+      new Date(
+        date + "T12:00:00"
+      );
+
     document.getElementById(
       "recordTitle"
     ).textContent =
-      `📅 ${date} 學生完成紀錄`;
+      `📅 ${displayDateText(selectedDate)} 完成紀錄`;
   }
 
   function getStoredDates() {
-    const prefix = "801-daily-record-";
+    const prefix =
+      "801-daily-record-";
+
     const dates = [];
 
     for (
@@ -748,110 +1029,203 @@
       i < localStorage.length;
       i++
     ) {
-      const key = localStorage.key(i);
+      const key =
+        localStorage.key(i);
 
-      if (key && key.startsWith(prefix)) {
+      if (
+        key &&
+        key.startsWith(prefix)
+      ) {
         dates.push(
-          key.replace(prefix, "")
+          key.replace(
+            prefix,
+            ""
+          )
         );
       }
     }
 
-    return dates.sort().reverse();
+    return dates
+      .sort()
+      .reverse();
   }
 
   function showHistory(studentId) {
-    const student =
-      students.find(s => s.id === studentId);
 
-    const dates = getStoredDates();
+    const student =
+      students.find(
+        s => s.id === studentId
+      );
+
+    const dates =
+      getStoredDates();
 
     const historyPanel =
-      document.getElementById("historyPanel");
+      document.getElementById(
+        "historyPanel"
+      );
 
     const historyTitle =
-      document.getElementById("historyTitle");
+      document.getElementById(
+        "historyTitle"
+      );
 
     const historyList =
-      document.getElementById("historyList");
+      document.getElementById(
+        "historyList"
+      );
 
     historyTitle.textContent =
       `👤 ${student.id}號 ${student.name}｜歷史紀錄`;
 
     historyList.innerHTML = "";
 
-    if (dates.length === 0) {
+    if (
+      dates.length === 0
+    ) {
       historyList.innerHTML =
-        `<div class="small-note">目前尚無紀錄。</div>`;
+        `<div class="small-note">
+          目前尚無紀錄。
+        </div>`;
 
-      historyPanel.classList.add("show");
+      historyPanel
+        .classList
+        .add("show");
+
       return;
     }
 
     dates.forEach(date => {
-      const records = loadRecords(date);
-      const record = records[studentId];
+
+      const records =
+        loadRecords(date);
+
+      const record =
+        records[studentId];
+
+      if (!record) {
+        return;
+      }
 
       const item =
-        document.createElement("div");
+        document.createElement(
+          "div"
+        );
 
-      item.className = "history-item";
+      item.className =
+        "history-item";
 
       item.innerHTML = `
-        <div><strong>${date}</strong></div>
-
-        <div class="${record.signed ? "history-good" : "history-bad"}">
-          ${record.signed ? "✅ 家長已簽" : "❌ 家長未簽"}
+        <div>
+          <strong>
+            ${date}
+          </strong>
         </div>
 
-        <div class="${record.journal ? "history-good" : "history-bad"}">
-          ${record.journal ? "✅ 札記已寫" : "❌ 札記未寫"}
+        <div
+          class="${record.signed ? "history-good" : "history-bad"}"
+        >
+          ${
+            record.signed
+              ? "✅ 家長已簽"
+              : "❌ 家長未簽"
+          }
+        </div>
+
+        <div
+          class="${record.journal ? "history-good" : "history-bad"}"
+        >
+          ${
+            record.journal
+              ? "✅ 札記已寫"
+              : "❌ 札記未寫"
+          }
         </div>
       `;
 
-      historyList.appendChild(item);
+      historyList
+        .appendChild(item);
     });
 
-    historyPanel.classList.add("show");
+    historyPanel
+      .classList
+      .add("show");
 
-    historyPanel.scrollIntoView({
-      behavior: "smooth",
-      block: "start"
-    });
+    historyPanel
+      .scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
   }
 
   function closeHistory() {
     document
-      .getElementById("historyPanel")
+      .getElementById(
+        "historyPanel"
+      )
       .classList
       .remove("show");
   }
 
   document
-    .querySelectorAll(".filter-btn")
+    .querySelectorAll(
+      ".filter-btn"
+    )
     .forEach(btn => {
-      btn.addEventListener("click", () => {
-        document
-          .querySelectorAll(".filter-btn")
-          .forEach(b => b.classList.remove("active"));
 
-        btn.classList.add("active");
+      btn.addEventListener(
+        "click",
+        () => {
 
-        currentFilter =
-          btn.dataset.filter;
+          document
+            .querySelectorAll(
+              ".filter-btn"
+            )
+            .forEach(b =>
+              b.classList.remove(
+                "active"
+              )
+            );
 
-        render();
-      });
+          btn.classList.add(
+            "active"
+          );
+
+          currentFilter =
+            btn.dataset.filter;
+
+          render();
+        }
+      );
     });
 
-  const dateInput =
-    document.getElementById("dateInput");
+  const today =
+    new Date();
 
-  dateInput.value = todayString();
+  document.getElementById(
+    "todayDisplay"
+  ).textContent =
+    displayDateText(today);
+
+  const previousWeekday =
+    getPreviousWeekday();
+
+  const dateInput =
+    document.getElementById(
+      "dateInput"
+    );
+
+  dateInput.value =
+    formatDateLocal(
+      previousWeekday
+    );
 
   dateInput.addEventListener(
     "change",
-    render
+    () => {
+      closeHistory();
+      render();
+    }
   );
 
   render();
