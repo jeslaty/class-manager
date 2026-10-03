@@ -1,1 +1,11 @@
-
+{
+  "name": "班級經營主控台",
+  "short_name": "班級主控台",
+  "description": "801 班級經營管理系統",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f8f7ff",
+  "theme_color": "#f8f7ff",
+  "orientation": "any",
+  "icons": []
+}
