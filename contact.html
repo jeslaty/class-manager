@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>801 每日完成紀錄</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "SF Pro TC",
+        "PingFang TC",
+        "Microsoft JhengHei",
+        sans-serif;
+      background: #f8fafc;
+      color: #1e293b;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    .page {
+      max-width: 1500px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .title-group h1 {
+      margin: 0;
+      font-size: 32px;
+      font-weight: 800;
+    }
+
+    .title-group p {
+      margin: 6px 0 0;
+      color: #64748b;
+      font-size: 15px;
+    }
+
+    .back-btn {
+      border: 1px solid #cbd5e1;
+      background: white;
+      color: #334155;
+      padding: 10px 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+
+    .panel {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
+    }
+
+    .left-panel {
+      padding: 18px;
+      position: sticky;
+      top: 20px;
+    }
+
+    .section-title {
+      font-size: 17px;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+
+    .date-input {
+      width: 100%;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      padding: 10px 12px;
+      background: #f8fafc;
+      margin-bottom: 18px;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .summary-card {
+      border-radius: 12px;
+      padding: 14px 10px;
+      text-align: center;
+    }
+
+    .summary-card.blue {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+    }
+
+    .summary-card.pink {
+      background: #fff1f2;
+      border: 1px solid #fecdd3;
+    }
+
+    .summary-number {
+      font-size: 24px;
+      font-weight: 800;
+      margin-top: 4px;
+    }
+
+    .filter-group {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .filter-btn {
+      border: 1px solid #cbd5e1;
+      background: white;
+      padding: 10px 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      text-align: left;
+      font-weight: 700;
+      color: #475569;
+    }
+
+    .filter-btn.active {
+      background: #e0f2fe;
+      border-color: #38bdf8;
+      color: #0369a1;
+    }
+
+    .unfinished-box {
+      margin-top: 20px;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      border-radius: 12px;
+      padding: 14px;
+    }
+
+    .unfinished-title {
+      font-weight: 800;
+      color: #b91c1c;
+      margin-bottom: 8px;
+    }
+
+    .unfinished-list {
+      color: #7f1d1d;
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .right-panel {
+      padding: 18px;
+    }
+
+    .right-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .right-header h2 {
+      margin: 0;
+      font-size: 22px;
+    }
+
+    .small-note {
+      color: #64748b;
+      font-size: 14px;
+    }
+
+    .student-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+
+    .student-card {
+      border: 1px solid #dbeafe;
+      background: #ffffff;
+      border-radius: 14px;
+      padding: 16px;
+      transition: 0.15s ease;
+    }
+
+    .student-card.incomplete {
+      border-color: #fca5a5;
+      background: #fffafa;
+    }
+
+    .student-card:hover {
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+      transform: translateY(-1px);
+    }
+
+    .student-name {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .student-name strong {
+      font-size: 18px;
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: #22c55e;
+      flex-shrink: 0;
+    }
+
+    .student-card.incomplete .status-dot {
+      background: #ef4444;
+    }
+
+    .record-row {
+      display: grid;
+      grid-template-columns: 84px 1fr;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .record-label {
+      font-weight: 700;
+      color: #475569;
+      font-size: 14px;
+    }
+
+    .toggle-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+
+    .toggle-btn {
+      border: 1px solid #cbd5e1;
+      background: #f8fafc;
+      color: #64748b;
+      border-radius: 8px;
+      padding: 8px 6px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .toggle-btn.good.active {
+      background: #dcfce7;
+      border-color: #86efac;
+      color: #166534;
+    }
+
+    .toggle-btn.bad.active {
+      background: #fee2e2;
+      border-color: #fca5a5;
+      color: #991b1b;
+    }
+
+    .history-btn {
+      width: 100%;
+      margin-top: 8px;
+      border: none;
+      border-radius: 9px;
+      background: #f1f5f9;
+      color: #475569;
+      padding: 9px;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .history-btn:hover {
+      background: #e2e8f0;
+    }
+
+    .history-panel {
+      margin-top: 18px;
+      border-top: 1px solid #e2e8f0;
+      padding-top: 18px;
+      display: none;
+    }
+
+    .history-panel.show {
+      display: block;
+    }
+
+    .history-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .history-title {
+      font-size: 20px;
+      font-weight: 800;
+    }
+
+    .close-history {
+      border: none;
+      background: #f1f5f9;
+      border-radius: 8px;
+      padding: 7px 10px;
+      cursor: pointer;
+    }
+
+    .history-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .history-item {
+      display: grid;
+      grid-template-columns: 110px 1fr 1fr;
+      gap: 10px;
+      align-items: center;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 14px;
+    }
+
+    .history-good {
+      color: #15803d;
+      font-weight: 700;
+    }
+
+    .history-bad {
+      color: #b91c1c;
+      font-weight: 700;
+    }
+
+    @media (max-width: 1100px) {
+      .student-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 800px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .left-panel {
+        position: static;
+      }
+
+      .student-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .page {
+        padding: 12px;
+      }
+
+      .topbar {
+        align-items: flex-start;
+      }
+
+      .title-group h1 {
+        font-size: 25px;
+      }
+
+      .back-btn {
+        padding: 8px 10px;
+        font-size: 13px;
+      }
+
+      .record-row {
+        grid-template-columns: 72px 1fr;
+      }
+
+      .history-item {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="page">
+
+  <div class="topbar">
+    <div class="title-group">
+      <h1>📝 801 每日完成紀錄</h1>
+      <p>家長簽名・生活札記・歷史追蹤</p>
+    </div>
+
+    <button class="back-btn" onclick="window.location.href='index.html'">
+      🏠 返回主控台
+    </button>
+  </div>
+
+  <div class="layout">
+
+    <aside class="panel left-panel">
+
+      <div class="section-title">📅 日期</div>
+
+      <input
+        id="dateInput"
+        class="date-input"
+        type="date"
+      >
+
+      <div class="section-title">📊 今日完成概況</div>
+
+      <div class="summary-grid">
+        <div class="summary-card blue">
+          <div>家長簽名</div>
+          <div id="signedSummary" class="summary-number">0 / 28</div>
+        </div>
+
+        <div class="summary-card pink">
+          <div>生活札記</div>
+          <div id="journalSummary" class="summary-number">0 / 28</div>
+        </div>
+      </div>
+
+      <div class="section-title">🔎 顯示方式</div>
+
+      <div class="filter-group">
+        <button class="filter-btn active" data-filter="all">
+          👥 全部學生
+        </button>
+
+        <button class="filter-btn" data-filter="incomplete">
+          ❗ 只看未完成
+        </button>
+
+        <button class="filter-btn" data-filter="complete">
+          ✅ 只看全部完成
+        </button>
+      </div>
+
+      <div class="unfinished-box">
+        <div class="unfinished-title">❗ 今日未完成</div>
+        <div id="unfinishedList" class="unfinished-list">
+          載入中...
+        </div>
+      </div>
+
+    </aside>
+
+    <main class="panel right-panel">
+
+      <div class="right-header">
+        <div>
+          <h2 id="recordTitle">今日學生紀錄</h2>
+          <div class="small-note">
+            點選狀態後會立即保存在這台裝置
+          </div>
+        </div>
+      </div>
+
+      <div id="studentGrid" class="student-grid"></div>
+
+      <div id="historyPanel" class="history-panel">
+        <div class="history-header">
+          <div id="historyTitle" class="history-title"></div>
+
+          <button class="close-history" onclick="closeHistory()">
+            ✕ 關閉
+          </button>
+        </div>
+
+        <div id="historyList" class="history-list"></div>
+      </div>
+
+    </main>
+
+  </div>
+
+</div>
+
+<script>
+  const students = [
+    { id: 1, name: "王喬昕" },
+    { id: 2, name: "吳岢曈" },
+    { id: 3, name: "李巧彤" },
+    { id: 4, name: "岳昀軒" },
+    { id: 5, name: "林晏以" },
+    { id: 6, name: "林晨琳" },
+    { id: 7, name: "林芮妘" },
+    { id: 8, name: "林苡嫻" },
+    { id: 9, name: "黃榆涵" },
+    { id: 10, name: "黃榆涵" },
+    { id: 11, name: "蔡可琳" },
+    { id: 12, name: "戴彤竹" },
+    { id: 13, name: "羅羽翎" },
+    { id: 14, name: "羅昕彤" },
+    { id: 15, name: "林禹彤" },
+    { id: 16, name: "王楷文" },
+    { id: 17, name: "王駿展" },
+    { id: 18, name: "吳軒佑" },
+    { id: 19, name: "李宇哲" },
+    { id: 20, name: "林柏辰" },
+    { id: 21, name: "張品御" },
+    { id: 22, name: "陳正澤" },
+    { id: 23, name: "陳秉玄" },
+    { id: 24, name: "陳鼎硯" },
+    { id: 25, name: "黃楙軒" },
+    { id: 26, name: "董子以" },
+    { id: 27, name: "劉家佑" },
+    { id: 28, name: "魏辰恩" }
+  ];
+
+  let currentFilter = "all";
+
+  function todayString() {
+    const now = new Date();
+    const offset = now.getTimezoneOffset();
+    const local = new Date(now.getTime() - offset * 60 * 1000);
+    return local.toISOString().split("T")[0];
+  }
+
+  function storageKey(date) {
+    return `801-daily-record-${date}`;
+  }
+
+  function createDefaultRecord() {
+    const obj = {};
+
+    students.forEach(student => {
+      obj[student.id] = {
+        signed: true,
+        journal: true
+      };
+    });
+
+    return obj;
+  }
+
+  function loadRecords(date) {
+    const raw = localStorage.getItem(storageKey(date));
+
+    if (!raw) {
+      return createDefaultRecord();
+    }
+
+    try {
+      return JSON.parse(raw);
+    } catch {
+      return createDefaultRecord();
+    }
+  }
+
+  function saveRecords(date, records) {
+    localStorage.setItem(
+      storageKey(date),
+      JSON.stringify(records)
+    );
+  }
+
+  function getCurrentDate() {
+    return document.getElementById("dateInput").value;
+  }
+
+  function setStatus(studentId, field, value) {
+    const date = getCurrentDate();
+    const records = loadRecords(date);
+
+    records[studentId][field] = value;
+
+    saveRecords(date, records);
+    render();
+  }
+
+  function isComplete(record) {
+    return record.signed && record.journal;
+  }
+
+  function render() {
+    const date = getCurrentDate();
+    const records = loadRecords(date);
+
+    const grid = document.getElementById("studentGrid");
+    grid.innerHTML = "";
+
+    let signedCount = 0;
+    let journalCount = 0;
+
+    const unfinished = [];
+
+    students.forEach(student => {
+      const record = records[student.id];
+
+      if (record.signed) signedCount++;
+      if (record.journal) journalCount++;
+
+      const complete = isComplete(record);
+
+      if (!complete) {
+        const problems = [];
+
+        if (!record.signed) problems.push("家長未簽");
+        if (!record.journal) problems.push("札記未寫");
+
+        unfinished.push(
+          `${student.id}號 ${student.name}：${problems.join("、")}`
+        );
+      }
+
+      if (
+        currentFilter === "incomplete" &&
+        complete
+      ) {
+        return;
+      }
+
+      if (
+        currentFilter === "complete" &&
+        !complete
+      ) {
+        return;
+      }
+
+      const card = document.createElement("div");
+
+      card.className =
+        "student-card" +
+        (complete ? "" : " incomplete");
+
+      card.innerHTML = `
+        <div class="student-name">
+          <strong>${student.id}號 ${student.name}</strong>
+          <span class="status-dot"></span>
+        </div>
+
+        <div class="record-row">
+          <div class="record-label">家長簽名</div>
+
+          <div class="toggle-group">
+            <button
+              class="toggle-btn good ${record.signed ? "active" : ""}"
+              onclick="setStatus(${student.id}, 'signed', true)"
+            >
+              ✅ 已簽
+            </button>
+
+            <button
+              class="toggle-btn bad ${!record.signed ? "active" : ""}"
+              onclick="setStatus(${student.id}, 'signed', false)"
+            >
+              ❌ 未簽
+            </button>
+          </div>
+        </div>
+
+        <div class="record-row">
+          <div class="record-label">生活札記</div>
+
+          <div class="toggle-group">
+            <button
+              class="toggle-btn good ${record.journal ? "active" : ""}"
+              onclick="setStatus(${student.id}, 'journal', true)"
+            >
+              ✅ 已寫
+            </button>
+
+            <button
+              class="toggle-btn bad ${!record.journal ? "active" : ""}"
+              onclick="setStatus(${student.id}, 'journal', false)"
+            >
+              ❌ 未寫
+            </button>
+          </div>
+        </div>
+
+        <button
+          class="history-btn"
+          onclick="showHistory(${student.id})"
+        >
+          📜 查看個人紀錄
+        </button>
+      `;
+
+      grid.appendChild(card);
+    });
+
+    document.getElementById(
+      "signedSummary"
+    ).textContent =
+      `${signedCount} / ${students.length}`;
+
+    document.getElementById(
+      "journalSummary"
+    ).textContent =
+      `${journalCount} / ${students.length}`;
+
+    const unfinishedList =
+      document.getElementById("unfinishedList");
+
+    if (unfinished.length === 0) {
+      unfinishedList.innerHTML =
+        "🎉 今天全班兩項皆完成";
+    } else {
+      unfinishedList.innerHTML =
+        unfinished.join("<br>");
+    }
+
+    document.getElementById(
+      "recordTitle"
+    ).textContent =
+      `📅 ${date} 學生完成紀錄`;
+  }
+
+  function getStoredDates() {
+    const prefix = "801-daily-record-";
+    const dates = [];
+
+    for (
+      let i = 0;
+      i < localStorage.length;
+      i++
+    ) {
+      const key = localStorage.key(i);
+
+      if (key && key.startsWith(prefix)) {
+        dates.push(
+          key.replace(prefix, "")
+        );
+      }
+    }
+
+    return dates.sort().reverse();
+  }
+
+  function showHistory(studentId) {
+    const student =
+      students.find(s => s.id === studentId);
+
+    const dates = getStoredDates();
+
+    const historyPanel =
+      document.getElementById("historyPanel");
+
+    const historyTitle =
+      document.getElementById("historyTitle");
+
+    const historyList =
+      document.getElementById("historyList");
+
+    historyTitle.textContent =
+      `👤 ${student.id}號 ${student.name}｜歷史紀錄`;
+
+    historyList.innerHTML = "";
+
+    if (dates.length === 0) {
+      historyList.innerHTML =
+        `<div class="small-note">目前尚無紀錄。</div>`;
+
+      historyPanel.classList.add("show");
+      return;
+    }
+
+    dates.forEach(date => {
+      const records = loadRecords(date);
+      const record = records[studentId];
+
+      const item =
+        document.createElement("div");
+
+      item.className = "history-item";
+
+      item.innerHTML = `
+        <div><strong>${date}</strong></div>
+
+        <div class="${record.signed ? "history-good" : "history-bad"}">
+          ${record.signed ? "✅ 家長已簽" : "❌ 家長未簽"}
+        </div>
+
+        <div class="${record.journal ? "history-good" : "history-bad"}">
+          ${record.journal ? "✅ 札記已寫" : "❌ 札記未寫"}
+        </div>
+      `;
+
+      historyList.appendChild(item);
+    });
+
+    historyPanel.classList.add("show");
+
+    historyPanel.scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
+  }
+
+  function closeHistory() {
+    document
+      .getElementById("historyPanel")
+      .classList
+      .remove("show");
+  }
+
+  document
+    .querySelectorAll(".filter-btn")
+    .forEach(btn => {
+      btn.addEventListener("click", () => {
+        document
+          .querySelectorAll(".filter-btn")
+          .forEach(b => b.classList.remove("active"));
+
+        btn.classList.add("active");
+
+        currentFilter =
+          btn.dataset.filter;
+
+        render();
+      });
+    });
+
+  const dateInput =
+    document.getElementById("dateInput");
+
+  dateInput.value = todayString();
+
+  dateInput.addEventListener(
+    "change",
+    render
+  );
+
+  render();
+</script>
+
+</body>
+</html>
