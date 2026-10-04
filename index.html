@@ -9,22 +9,25 @@
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="app-icon.png">
 
-  <meta name="theme-color" content="#f8f7ff">
+  <meta name="theme-color" content="#f7f6ff">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="班級主控台">
 
   <style>
+
     * {
       box-sizing: border-box;
     }
 
     body {
       margin: 0;
+
       font-family:
         -apple-system,
         BlinkMacSystemFont,
-        "SF Pro TC",
+        "Segoe UI",
+        "Noto Sans TC",
         "PingFang TC",
         "Microsoft JhengHei",
         sans-serif;
@@ -37,357 +40,558 @@
           #f5f1ff 100%
         );
 
-      color: #334155;
+      color: #2f3e55;
+
       min-height: 100vh;
     }
 
+
+    /* =========================
+       整頁
+       ========================= */
+
     .page {
-      max-width: 1500px;
+      width: 100%;
+      max-width: 1680px;
       margin: 0 auto;
-      padding: 18px;
+      padding: 14px 20px 20px;
     }
+
+
+    /* =========================
+       上方標題區
+       ========================= */
 
     .hero {
-      background: rgba(255, 255, 255, 0.86);
-      border-radius: 28px;
-      padding: 34px 24px;
-      text-align: center;
-      box-shadow: 0 8px 28px rgba(80, 70, 120, 0.08);
-      margin-bottom: 28px;
-    }
+      background:
+        rgba(255, 255, 255, 0.84);
 
-    .hero h1 {
-      margin: 0;
-      font-size: 42px;
-      font-weight: 800;
-      letter-spacing: 1px;
-    }
+      border-radius: 30px;
 
-    .hero p {
-      margin: 14px 0 0;
-      font-size: 18px;
-      color: #64748b;
-    }
+      min-height: 165px;
 
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
-    }
-
-    .card {
-      min-height: 230px;
-      border-radius: 26px;
-      padding: 28px 20px;
+      padding: 32px 24px;
 
       display: flex;
       flex-direction: column;
-      justify-content: center;
       align-items: center;
+      justify-content: center;
 
       text-align: center;
+
+      box-shadow:
+        0 10px 30px rgba(79, 70, 120, 0.07);
+
+      margin-bottom: 34px;
+    }
+
+
+    .hero h1 {
+      margin: 0;
+
+      font-size: 44px;
+
+      line-height: 1.2;
+
+      font-weight: 900;
+
+      letter-spacing: 1px;
+
+      color: #334155;
+    }
+
+
+    .hero p {
+      margin: 14px 0 0;
+
+      font-size: 18px;
+
+      font-weight: 600;
+
+      color: #6b7d98;
+    }
+
+
+    /* =========================
+       六宮格
+       ========================= */
+
+    .grid {
+      display: grid;
+
+      grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+      gap: 24px;
+    }
+
+
+    .card {
+      min-height: 255px;
+
+      border-radius: 28px;
+
+      padding: 32px 24px;
+
+      display: flex;
+      flex-direction: column;
+
+      align-items: center;
+      justify-content: center;
+
+      text-align: center;
+
       text-decoration: none;
+
       color: #334155;
 
-      transition: 0.2s ease;
+      border: 2px solid transparent;
 
       box-shadow:
-        0 8px 24px rgba(90, 80, 130, 0.08);
+        0 10px 26px rgba(80, 70, 120, 0.08);
 
-      border: 2px solid transparent;
-      cursor: pointer;
+      transition:
+        transform 0.18s ease,
+        box-shadow 0.18s ease;
     }
+
 
     .card:hover {
-      transform: translateY(-4px);
+      transform:
+        translateY(-4px);
+
       box-shadow:
-        0 14px 32px rgba(90, 80, 130, 0.13);
+        0 16px 35px rgba(80, 70, 120, 0.13);
     }
 
-    .card.disabled {
-      opacity: 0.62;
-      cursor: default;
-    }
 
-    .card.disabled:hover {
-      transform: none;
-      box-shadow:
-        0 8px 24px rgba(90, 80, 130, 0.08);
-    }
+    /* =========================
+       卡片顏色
+       ========================= */
 
     .pink {
-      background: #fff1f5;
-      border-color: #ffc9d8;
+      background:
+        #fff1f5;
+
+      border-color:
+        #ffc7d6;
     }
+
 
     .blue {
-      background: #eef7ff;
-      border-color: #b9e1ff;
+      background:
+        #eef7ff;
+
+      border-color:
+        #aee0ff;
     }
+
 
     .purple {
-      background: #f4f0ff;
-      border-color: #d8ccff;
+      background:
+        #f4f0ff;
+
+      border-color:
+        #d8c8ff;
     }
 
+
+    /* =========================
+       圖示
+       ========================= */
+
     .icon {
-      font-size: 54px;
-      margin-bottom: 22px;
+      font-size: 55px;
+
+      line-height: 1;
+
+      margin-bottom: 28px;
     }
+
+
+    /* =========================
+       卡片文字
+       ========================= */
 
     .card h2 {
       margin: 0;
+
       font-size: 27px;
-      font-weight: 800;
+
+      line-height: 1.35;
+
+      font-weight: 900;
+
+      letter-spacing: 0.3px;
+
+      color: #2f3e55;
     }
 
+
     .card p {
-      margin: 12px 0 0;
+      margin:
+        14px 0 0;
+
       font-size: 16px;
-      color: #64748b;
+
+      line-height: 1.5;
+
+      font-weight: 700;
+
+      color: #6b7d98;
+    }
+
+
+    /* =========================
+       尚未開發
+       ========================= */
+
+    .disabled {
+      opacity: 0.72;
+
+      cursor: default;
+    }
+
+
+    .disabled:hover {
+      transform: none;
+
+      box-shadow:
+        0 10px 26px rgba(80, 70, 120, 0.08);
+    }
+
+
+    /* =========================
+       Footer
+       ========================= */
+
+    .footer {
+      margin-top: 36px;
+
+      min-height: 48px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      background:
+        rgba(255, 255, 255, 0.88);
+
+      border:
+        1px solid #d6dbe5;
+
+      border-radius: 12px;
+
+      color: #4b5563;
+
+      font-size: 15px;
+
       font-weight: 600;
     }
 
-    .status-badge {
-      display: inline-block;
-      margin-top: 13px;
-      padding: 5px 11px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 800;
-    }
 
-    .ready {
-      background: rgba(220, 252, 231, 0.9);
-      color: #166534;
-    }
+    /* =========================
+       平板
+       ========================= */
 
-    .soon {
-      background: rgba(255, 255, 255, 0.75);
-      color: #64748b;
-    }
+    @media (max-width: 1000px) {
 
-    .footer {
-      margin-top: 34px;
-      background: rgba(255, 255, 255, 0.86);
-      border: 1px solid #d8dee9;
-      border-radius: 14px;
-      padding: 14px;
-      text-align: center;
-      color: #475569;
-      font-size: 15px;
-    }
-
-    @media (max-width: 900px) {
       .grid {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns:
+          repeat(2, minmax(0, 1fr));
       }
 
       .hero h1 {
-        font-size: 34px;
+        font-size: 38px;
       }
+
     }
 
-    @media (max-width: 600px) {
+
+    /* =========================
+       手機
+       ========================= */
+
+    @media (max-width: 650px) {
+
       .page {
-        padding: 14px;
+        padding:
+          12px;
       }
+
 
       .hero {
-        padding: 28px 18px;
-        border-radius: 22px;
+        min-height: 145px;
+
+        padding:
+          26px 18px;
+
+        border-radius:
+          24px;
+
+        margin-bottom:
+          18px;
       }
+
 
       .hero h1 {
-        font-size: 28px;
+        font-size:
+          29px;
       }
+
 
       .hero p {
-        font-size: 15px;
+        font-size:
+          14px;
+
+        line-height:
+          1.5;
       }
+
 
       .grid {
-        grid-template-columns: 1fr;
-        gap: 14px;
+        grid-template-columns:
+          1fr;
+
+        gap:
+          15px;
       }
+
 
       .card {
-        min-height: 170px;
-        border-radius: 20px;
+        min-height:
+          180px;
+
+        border-radius:
+          22px;
+
+        padding:
+          24px 18px;
       }
+
 
       .icon {
-        font-size: 44px;
-        margin-bottom: 14px;
+        font-size:
+          45px;
+
+        margin-bottom:
+          18px;
       }
+
 
       .card h2 {
-        font-size: 23px;
+        font-size:
+          23px;
       }
 
+
       .card p {
-        font-size: 14px;
+        margin-top:
+          9px;
+
+        font-size:
+          14px;
       }
+
+
+      .footer {
+        margin-top:
+          20px;
+
+        font-size:
+          14px;
+      }
+
     }
+
   </style>
 </head>
 
+
 <body>
 
-  <div class="page">
+<div class="page">
 
-    <section class="hero">
-      <h1>🏫 班級經營主控台</h1>
+
+  <!-- =========================
+       標題
+       ========================= -->
+
+  <section class="hero">
+
+    <h1>
+      🏫 班級經營主控台
+    </h1>
+
+    <p>
+      點擊下方任一功能大方格，即可快速進入管理系統
+    </p>
+
+  </section>
+
+
+
+  <!-- =========================
+       功能區
+       ========================= -->
+
+  <section class="grid">
+
+
+    <!-- 每日完成紀錄 -->
+
+    <a
+      href="contact.html"
+      class="card pink"
+    >
+
+      <div class="icon">
+        📖
+      </div>
+
+      <h2>
+        每日完成紀錄
+      </h2>
 
       <p>
-        點擊下方功能，即可快速進入班級管理系統
+        801導師專屬
       </p>
-    </section>
 
-    <section class="grid">
+    </a>
 
-      <!-- 每日完成紀錄 -->
-      <a
-        href="contact.html"
-        class="card pink"
-      >
-        <div class="icon">
-          📖
-        </div>
 
-        <h2>
-          每日完成紀錄
-        </h2>
 
-        <p>
-          家長簽名・生活札記・歷史追蹤
-        </p>
+    <!-- 作業登記 -->
 
-        <span class="status-badge ready">
-          ✅ 可使用
-        </span>
-      </a>
+    <a
+      href="homework.html"
+      class="card blue"
+    >
 
-      <!-- 作業登記 -->
-      <a
-        href="homework.html"
-        class="card blue"
-      >
-        <div class="icon">
-          📚
-        </div>
+      <div class="icon">
+        📚
+      </div>
 
-        <h2>
-          作業登記專區
-        </h2>
+      <h2>
+        作業登記專區
+      </h2>
 
-        <p>
-          801・903・904・906 班級管理
-        </p>
+      <p>
+        各任課班級
+      </p>
 
-        <span class="status-badge ready">
-          ✅ 可使用
-        </span>
-      </a>
+    </a>
 
-      <!-- 座位表 -->
-      <a
-        href="seating.html"
-        class="card purple"
-      >
-        <div class="icon">
-          🪑
-        </div>
 
-        <h2>
-          座位表管理
-        </h2>
 
-        <p>
-          拖曳排位・隨機安排・列印
-        </p>
+    <!-- 座位表 -->
 
-        <span class="status-badge ready">
-          ✅ 可使用
-        </span>
-      </a>
+    <a
+      href="seating.html"
+      class="card purple"
+    >
 
-      <!-- 抽籤 -->
-      <a
-        href="#"
-        class="card blue disabled"
-        onclick="return false;"
-      >
-        <div class="icon">
-          🎲
-        </div>
+      <div class="icon">
+        🪑
+      </div>
 
-        <h2>
-          學生抽籤學輪播
-        </h2>
+      <h2>
+        座位表管理
+      </h2>
 
-        <p>
-          課堂互動・提問
-        </p>
+      <p>
+        排座位 / 印表
+      </p>
 
-        <span class="status-badge soon">
-          尚未開發
-        </span>
-      </a>
+    </a>
 
-      <!-- 倒數 -->
-      <a
-        href="#"
-        class="card pink disabled"
-        onclick="return false;"
-      >
-        <div class="icon">
-          ⏳
-        </div>
 
-        <h2>
-          考試倒數計時器
-        </h2>
 
-        <p>
-          段考・倒數提醒
-        </p>
+    <!-- 抽籤 -->
 
-        <span class="status-badge soon">
-          尚未開發
-        </span>
-      </a>
+    <a
+      href="#"
+      class="card blue disabled"
+      onclick="return false;"
+    >
 
-      <!-- 預留 -->
-      <a
-        href="#"
-        class="card purple disabled"
-        onclick="return false;"
-      >
-        <div class="icon">
-          ➕
-        </div>
+      <div class="icon">
+        🎲
+      </div>
 
-        <h2>
-          新增功能預留區
-        </h2>
+      <h2>
+        學生抽籤學輪播
+      </h2>
 
-        <p>
-          未來可擴充
-        </p>
+      <p>
+        課堂互動 / 提問
+      </p>
 
-        <span class="status-badge soon">
-          預留
-        </span>
-      </a>
+    </a>
 
-    </section>
 
-    <div class="footer">
-      🔒 班級管理系統
-    </div>
 
+    <!-- 倒數 -->
+
+    <a
+      href="#"
+      class="card pink disabled"
+      onclick="return false;"
+    >
+
+      <div class="icon">
+        ⏳
+      </div>
+
+      <h2>
+        考試倒數計時器
+      </h2>
+
+      <p>
+        段考 / 倒數提醒
+      </p>
+
+    </a>
+
+
+
+    <!-- 預留 -->
+
+    <a
+      href="#"
+      class="card purple disabled"
+      onclick="return false;"
+    >
+
+      <div class="icon">
+        ➕
+      </div>
+
+      <h2>
+        新增功能預留區
+      </h2>
+
+      <p>
+        點擊可擴充
+      </p>
+
+    </a>
+
+
+  </section>
+
+
+
+  <!-- =========================
+       Footer
+       ========================= -->
+
+  <div class="footer">
+    🔒 班級管理系統
   </div>
+
+
+</div>
 
 </body>
 </html>
