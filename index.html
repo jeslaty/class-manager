@@ -41,14 +41,14 @@
         );
 
       color: #2f3e55;
-
       min-height: 100vh;
     }
 
 
-    /* =========================
-       整頁
-       ========================= */
+    body.auth-checking {
+      visibility: hidden;
+    }
+
 
     .page {
       width: 100%;
@@ -63,14 +63,16 @@
        ========================= */
 
     .hero {
+      position: relative;
+
       background:
-        rgba(255, 255, 255, 0.84);
+        rgba(255, 255, 255, 0.86);
 
       border-radius: 30px;
 
-      min-height: 165px;
+      min-height: 190px;
 
-      padding: 32px 24px;
+      padding: 46px 24px 32px;
 
       display: flex;
       flex-direction: column;
@@ -83,6 +85,62 @@
         0 10px 30px rgba(79, 70, 120, 0.07);
 
       margin-bottom: 34px;
+    }
+
+
+    /* 登入帳號區 */
+
+    .account-area {
+      position: absolute;
+
+      top: 18px;
+      right: 22px;
+
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+
+    .account-box {
+      padding: 8px 12px;
+
+      border-radius: 10px;
+
+      background: #f8fafc;
+
+      border: 1px solid #d8dee9;
+
+      color: #64748b;
+
+      font-size: 13px;
+      font-weight: 700;
+
+      white-space: nowrap;
+    }
+
+
+    .logout-btn {
+      border: 1px solid #ffc7d6;
+
+      background: #fff1f5;
+
+      color: #be123c;
+
+      border-radius: 10px;
+
+      padding: 8px 12px;
+
+      cursor: pointer;
+
+      font-size: 13px;
+
+      font-weight: 800;
+    }
+
+
+    .logout-btn:hover {
+      background: #ffe4eb;
     }
 
 
@@ -157,48 +215,30 @@
 
 
     .card:hover {
-      transform:
-        translateY(-4px);
+      transform: translateY(-4px);
 
       box-shadow:
         0 16px 35px rgba(80, 70, 120, 0.13);
     }
 
 
-    /* =========================
-       卡片顏色
-       ========================= */
-
     .pink {
-      background:
-        #fff1f5;
-
-      border-color:
-        #ffc7d6;
+      background: #fff1f5;
+      border-color: #ffc7d6;
     }
 
 
     .blue {
-      background:
-        #eef7ff;
-
-      border-color:
-        #aee0ff;
+      background: #eef7ff;
+      border-color: #aee0ff;
     }
 
 
     .purple {
-      background:
-        #f4f0ff;
-
-      border-color:
-        #d8c8ff;
+      background: #f4f0ff;
+      border-color: #d8c8ff;
     }
 
-
-    /* =========================
-       圖示
-       ========================= */
 
     .icon {
       font-size: 55px;
@@ -208,10 +248,6 @@
       margin-bottom: 28px;
     }
 
-
-    /* =========================
-       卡片文字
-       ========================= */
 
     .card h2 {
       margin: 0;
@@ -229,8 +265,7 @@
 
 
     .card p {
-      margin:
-        14px 0 0;
+      margin: 14px 0 0;
 
       font-size: 16px;
 
@@ -241,10 +276,6 @@
       color: #6b7d98;
     }
 
-
-    /* =========================
-       尚未開發
-       ========================= */
 
     .disabled {
       opacity: 0.72;
@@ -315,91 +346,98 @@
     @media (max-width: 650px) {
 
       .page {
-        padding:
-          12px;
+        padding: 12px;
       }
 
 
       .hero {
-        min-height: 145px;
+        min-height: 200px;
 
         padding:
-          26px 18px;
+          74px 18px 26px;
 
-        border-radius:
-          24px;
+        border-radius: 24px;
 
-        margin-bottom:
-          18px;
+        margin-bottom: 18px;
+      }
+
+
+      .account-area {
+        top: 14px;
+        left: 14px;
+        right: 14px;
+
+        justify-content: space-between;
+      }
+
+
+      .account-box {
+        max-width: 70%;
+
+        overflow: hidden;
+
+        text-overflow: ellipsis;
+
+        font-size: 12px;
+      }
+
+
+      .logout-btn {
+        font-size: 12px;
       }
 
 
       .hero h1 {
-        font-size:
-          29px;
+        font-size: 29px;
       }
 
 
       .hero p {
-        font-size:
-          14px;
+        font-size: 14px;
 
-        line-height:
-          1.5;
+        line-height: 1.5;
       }
 
 
       .grid {
-        grid-template-columns:
-          1fr;
+        grid-template-columns: 1fr;
 
-        gap:
-          15px;
+        gap: 15px;
       }
 
 
       .card {
-        min-height:
-          180px;
+        min-height: 180px;
 
-        border-radius:
-          22px;
+        border-radius: 22px;
 
-        padding:
-          24px 18px;
+        padding: 24px 18px;
       }
 
 
       .icon {
-        font-size:
-          45px;
+        font-size: 45px;
 
-        margin-bottom:
-          18px;
+        margin-bottom: 18px;
       }
 
 
       .card h2 {
-        font-size:
-          23px;
+        font-size: 23px;
       }
 
 
       .card p {
-        margin-top:
-          9px;
+        margin-top: 9px;
 
-        font-size:
-          14px;
+        font-size: 14px;
       }
 
 
       .footer {
-        margin-top:
-          20px;
+        margin-top: 20px;
 
-        font-size:
-          14px;
+        font-size: 14px;
       }
 
     }
@@ -408,7 +446,7 @@
 </head>
 
 
-<body>
+<body class="auth-checking">
 
 <div class="page">
 
@@ -418,6 +456,25 @@
        ========================= -->
 
   <section class="hero">
+
+
+    <!-- 登入帳號 -->
+
+    <div class="account-area">
+
+      <div class="account-box">
+        👤 <span id="userEmail">確認登入中...</span>
+      </div>
+
+      <button
+        id="logoutButton"
+        class="logout-btn"
+      >
+        🚪 登出
+      </button>
+
+    </div>
+
 
     <h1>
       🏫 班級經營主控台
@@ -581,17 +638,117 @@
   </section>
 
 
-
-  <!-- =========================
-       Footer
-       ========================= -->
-
   <div class="footer">
     🔒 班級管理系統
   </div>
 
 
 </div>
+
+
+<script type="module">
+
+  import {
+    auth
+  } from "./firebase-config.js";
+
+
+  import {
+    onAuthStateChanged,
+    signOut
+  } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+
+
+  const userEmail =
+    document.getElementById(
+      "userEmail"
+    );
+
+
+  const logoutButton =
+    document.getElementById(
+      "logoutButton"
+    );
+
+
+  /*
+    檢查是否登入
+  */
+
+  onAuthStateChanged(
+    auth,
+
+    user => {
+
+      if (!user) {
+
+        window.location.replace(
+          "login.html"
+        );
+
+        return;
+      }
+
+
+      userEmail.textContent =
+        user.email || "已登入";
+
+
+      document.body.classList.remove(
+        "auth-checking"
+      );
+
+    }
+  );
+
+
+  /*
+    登出
+  */
+
+  logoutButton.addEventListener(
+    "click",
+
+    async () => {
+
+      const confirmed =
+        confirm(
+          "確定要登出班級管理系統嗎？"
+        );
+
+
+      if (!confirmed) {
+        return;
+      }
+
+
+      try {
+
+        await signOut(auth);
+
+
+        window.location.replace(
+          "login.html"
+        );
+
+      }
+
+      catch (error) {
+
+        console.error(error);
+
+
+        alert(
+          "登出失敗，請重新整理後再試一次。"
+        );
+
+      }
+
+    }
+  );
+
+</script>
+
 
 </body>
 </html>
