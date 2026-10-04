@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>801 班級座位表</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "SF Pro TC",
+        "PingFang TC",
+        "Microsoft JhengHei",
+        sans-serif;
+      background: #f8fafc;
+      color: #1e293b;
+    }
+
+    button {
+      font: inherit;
+    }
+
+    .page {
+      max-width: 1500px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .title-group h1 {
+      margin: 0;
+      font-size: 32px;
+      font-weight: 800;
+    }
+
+    .title-group p {
+      margin: 6px 0 0;
+      color: #64748b;
+      font-size: 14px;
+    }
+
+    .back-btn {
+      border: 1px solid #cbd5e1;
+      background: white;
+      color: #334155;
+      padding: 10px 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .container {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+
+    .panel {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+    }
+
+    .left-panel {
+      padding: 16px;
+      position: sticky;
+      top: 20px;
+    }
+
+    .right-panel {
+      padding: 16px;
+    }
+
+    .panel-title {
+      font-weight: 800;
+      color: #334155;
+      margin-bottom: 12px;
+      font-size: 17px;
+    }
+
+    .student-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+
+    .student-card {
+      background: #f0f9ff;
+      border: 1.5px solid #bae6fd;
+      border-radius: 10px;
+      padding: 9px 10px;
+      cursor: grab;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 700;
+      font-size: 14px;
+      color: #0369a1;
+      user-select: none;
+    }
+
+    .student-card:hover {
+      background: #e0f2fe;
+      border-color: #0284c7;
+    }
+
+    .all-assigned {
+      grid-column: 1 / -1;
+      text-align: center;
+      color: #15803d;
+      font-weight: 800;
+      padding: 20px 5px;
+      background: #f0fdf4;
+      border-radius: 10px;
+      border: 1px solid #bbf7d0;
+    }
+
+    .btn-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    button.action {
+      cursor: pointer;
+      padding: 9px 14px;
+      border-radius: 9px;
+      border: none;
+      font-weight: 800;
+      font-size: 14px;
+      transition: 0.2s ease;
+    }
+
+    .btn-primary {
+      background: #0284c7;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #0369a1;
+    }
+
+    .btn-danger {
+      background: #ef4444;
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background: #dc2626;
+    }
+
+    .btn-success {
+      background: #10b981;
+      color: white;
+    }
+
+    .btn-success:hover {
+      background: #059669;
+    }
+
+    .btn-secondary {
+      background: #64748b;
+      color: white;
+    }
+
+    .btn-save {
+      background: #7c3aed;
+      color: white;
+    }
+
+    .btn-save:hover {
+      background: #6d28d9;
+    }
+
+    .status-box {
+      margin-bottom: 14px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      color: #475569;
+      font-size: 13px;
+      display: none;
+    }
+
+    .status-box.show {
+      display: block;
+    }
+
+    .cadre-section {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 14px;
+    }
+
+    .cadre-title-head {
+      font-weight: 800;
+      color: #334155;
+      font-size: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+      gap: 12px;
+    }
+
+    .cadre-grid-top {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    .cadre-card-top {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-left: 3px solid #0284c7;
+      border-radius: 6px;
+      padding: 5px 6px;
+      font-size: 12px;
+    }
+
+    .cadre-role {
+      color: #64748b;
+      font-weight: 600;
+      font-size: 11px;
+    }
+
+    .cadre-name {
+      color: #0f172a;
+      font-weight: 700;
+      margin-top: 2px;
+    }
+
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .col-header {
+      text-align: center;
+      background: #e0f2fe;
+      color: #0284c7;
+      font-weight: 800;
+      padding: 7px;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+    .seat-box {
+      background: #f8fafc;
+      border: 2px dashed #cbd5e1;
+      border-radius: 12px;
+      min-height: 78px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      transition: 0.2s ease;
+      text-align: center;
+      padding: 5px;
+    }
+
+    .seat-box.drag-over {
+      background: #e0f2fe;
+      border-color: #0284c7;
+      transform: scale(1.02);
+    }
+
+    .seat-occupied {
+      background: white;
+      border: 2px solid #38bdf8;
+      box-shadow: 0 2px 4px rgba(15, 23, 42, 0.04);
+      cursor: grab;
+    }
+
+    .seat-id {
+      font-size: 12px;
+      color: #64748b;
+      font-weight: 600;
+    }
+
+    .seat-name {
+      font-size: 16px;
+      font-weight: 800;
+      color: #0f172a;
+      margin-top: 2px;
+    }
+
+    .walkway {
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .podium {
+      background: #334155;
+      color: white;
+      text-align: center;
+      padding: 9px;
+      border-radius: 10px;
+      font-weight: 800;
+      margin: 10px 0;
+      font-size: 14px;
+      letter-spacing: 1px;
+    }
+
+    .tip {
+      margin-top: 14px;
+      font-size: 12px;
+      line-height: 1.6;
+      color: #64748b;
+    }
+
+    @media (max-width: 1100px) {
+      .container {
+        grid-template-columns: 250px 1fr;
+      }
+
+      .cadre-grid-top {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+
+    @media (max-width: 800px) {
+      .container {
+        grid-template-columns: 1fr;
+      }
+
+      .left-panel {
+        position: static;
+      }
+
+      .student-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .cadre-grid-top {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .seat-box {
+        min-height: 65px;
+      }
+
+      .seat-name {
+        font-size: 13px;
+      }
+
+      .seat-id {
+        font-size: 10px;
+      }
+
+      .col-header {
+        font-size: 11px;
+        padding: 5px;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .page {
+        padding: 12px;
+      }
+
+      .topbar {
+        align-items: flex-start;
+      }
+
+      .title-group h1 {
+        font-size: 25px;
+      }
+
+      .back-btn {
+        padding: 8px 10px;
+        font-size: 13px;
+      }
+
+      .student-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .right-panel {
+        overflow-x: auto;
+      }
+
+      .grid-container,
+      .podium,
+      .cadre-section,
+      .btn-group,
+      .status-box {
+        min-width: 720px;
+      }
+    }
+
+    @media print {
+      .left-panel,
+      .btn-group,
+      .back-btn,
+      .status-box,
+      .topbar p {
+        display: none !important;
+      }
+
+      .page {
+        max-width: none;
+        padding: 0;
+      }
+
+      .container {
+        display: block;
+      }
+
+      .right-panel {
+        width: 100% !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+      }
+
+      body {
+        background: white;
+      }
+
+      .cadre-section {
+        border: 1px solid #000;
+        background: white;
+      }
+
+      .cadre-grid-top {
+        display: grid !important;
+      }
+
+      .cadre-card-top {
+        border: 1px solid #ccc;
+        border-left: 3px solid #000;
+      }
+
+      .seat-box {
+        border: 1.5px solid #000;
+        min-height: 80px;
+      }
+
+      .col-header {
+        border: 1.5px solid #000;
+        background: #eee !important;
+        color: #000;
+      }
+
+      .podium {
+        border: 1.5px solid #000;
+        background: #ddd !important;
+        color: #000;
+      }
+
+      .topbar {
+        margin-bottom: 10px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="page">
+
+  <div class="topbar">
+    <div class="title-group">
+      <h1>🪑 801 班級座位表</h1>
+      <p>拖曳排位・隨機安排・儲存座位・列印</p>
+    </div>
+
+    <button class="back-btn" onclick="window.location.href='index.html'">
+      🏠 返回主控台
+    </button>
+  </div>
+
+  <div class="container">
+
+    <aside class="panel left-panel">
+      <div class="panel-title">
+        🎒 待安排學生
+      </div>
+
+      <div id="studentPool" class="student-grid"></div>
+
+      <div class="tip">
+        可直接將學生拖曳到右側座位。<br>
+        已入座學生也可以再次拖曳更換位置。
+      </div>
+    </aside>
+
+    <main class="panel right-panel">
+
+      <div class="btn-group">
+
+        <button
+          class="action btn-primary"
+          onclick="autoAssign()"
+        >
+          🎲 一鍵隨機排位
+        </button>
+
+        <button
+          class="action btn-danger"
+          onclick="resetSeats()"
+        >
+          🗑️ 清空重置座位
+        </button>
+
+        <button
+          class="action btn-save"
+          onclick="saveSeats()"
+        >
+          💾 儲存目前座位
+        </button>
+
+        <button
+          class="action btn-secondary"
+          onclick="loadSeats()"
+        >
+          📂 載入已儲存座位
+        </button>
+
+        <button
+          class="action btn-success"
+          onclick="window.print()"
+        >
+          🖨️ 列印座位表
+        </button>
+
+        <button
+          class="action btn-secondary"
+          onclick="toggleView()"
+          id="viewBtn"
+        >
+          🔄 切換為學生視角
+        </button>
+
+      </div>
+
+      <div
+        id="statusBox"
+        class="status-box"
+      >
+      </div>
+
+      <div class="cadre-section">
+
+        <div
+          class="cadre-title-head"
+          onclick="toggleCadres()"
+        >
+          <span>
+            🎖️ 801 班級幹部與小老師一覽
+          </span>
+
+          <span id="toggleIcon">
+            🔽 點擊展開
+          </span>
+        </div>
+
+        <div
+          class="cadre-grid-top"
+          id="cadreTopGrid"
+          style="display:none;"
+        >
+        </div>
+
+      </div>
+
+      <div
+        id="topPodium"
+        class="podium"
+        style="display:none;"
+      >
+        📺 黑板 / 教師講台區
+        （學生視角：面向講台）
+      </div>
+
+      <div
+        class="grid-container"
+        id="gridHeader"
+      >
+      </div>
+
+      <div
+        class="grid-container"
+        id="gridSeats"
+      >
+      </div>
+
+      <div
+        id="bottomPodium"
+        class="podium"
+      >
+        📺 黑板 / 教師講台區
+        （老師講台視角：站在講台面對學生）
+      </div>
+
+    </main>
+
+  </div>
+
+</div>
+
+<script>
+  const studentsData = [
+    { id: 1, name: "王喬昕" },
+    { id: 2, name: "吳岢曈" },
+    { id: 3, name: "李巧彤" },
+    { id: 4, name: "岳昀軒" },
+    { id: 5, name: "林晏以" },
+    { id: 6, name: "林晨琳" },
+    { id: 7, name: "林芮妘" },
+    { id: 8, name: "林苡嫻" },
+    { id: 9, name: "黃榆涵" },
+    { id: 10, name: "黃榆涵" },
+    { id: 11, name: "蔡可琳" },
+    { id: 12, name: "戴彤竹" },
+    { id: 13, name: "羅羽翎" },
+    { id: 14, name: "羅昕彤" },
+    { id: 15, name: "林禹彤" },
+    { id: 16, name: "王楷文" },
+    { id: 17, name: "王駿展" },
+    { id: 18, name: "吳軒佑" },
+    { id: 19, name: "李宇哲" },
+    { id: 20, name: "林柏辰" },
+    { id: 21, name: "張品御" },
+    { id: 22, name: "陳正澤" },
+    { id: 23, name: "陳秉玄" },
+    { id: 24, name: "陳鼎硯" },
+    { id: 25, name: "黃楙軒" },
+    { id: 26, name: "董子以" },
+    { id: 27, name: "劉家佑" },
+    { id: 28, name: "魏辰恩" }
+  ];
+
+  const cadresData = [
+    { cadre: "班長", id: 5, name: "林晏以" },
+    { cadre: "副班長", id: 3, name: "李巧彤" },
+    { cadre: "風紀股長", id: 20, name: "林柏辰" },
+    { cadre: "學藝股長", id: 13, name: "羅羽翎" },
+    { cadre: "衛生股長", id: 15, name: "林禹彤" },
+    { cadre: "副衛生股長", id: 10, name: "黃榆涵" },
+    { cadre: "保健股長", id: 25, name: "黃楙軒" },
+    { cadre: "康樂股長", id: 17, name: "王駿展" },
+    { cadre: "輔導股長", id: 12, name: "戴彤竹" },
+    { cadre: "事務股長", id: 16, name: "王楷文" },
+    { cadre: "食勤股長", id: 24, name: "陳鼎硯" },
+    { cadre: "國文小老師", id: 11, name: "蔡可琳" },
+    { cadre: "英語小老師", id: 27, name: "劉家佑" },
+    { cadre: "數學小老師", id: 10, name: "黃榆涵" },
+    { cadre: "自然小老師", id: 16, name: "王楷文" },
+    { cadre: "歷史小老師", id: 3, name: "李巧彤" },
+    { cadre: "地理小老師", id: 6, name: "林晨琳" },
+    { cadre: "公民+閩南語", id: 2, name: "吳岢曈" },
+    { cadre: "音樂小老師", id: 21, name: "張品御" },
+    { cadre: "表藝小老師", id: 14, name: "羅昕彤" },
+    { cadre: "視覺藝術", id: 8, name: "林苡嫻" },
+    { cadre: "健康教育", id: 17, name: "王駿展" },
+    { cadre: "綜合(一)輔導", id: 12, name: "戴彤竹" },
+    { cadre: "綜合(二)童軍", id: 13, name: "羅羽翎" },
+    { cadre: "綜合(三)家政", id: 1, name: "王喬昕" },
+    { cadre: "資訊小老師", id: 28, name: "魏辰恩" },
+    { cadre: "生科小老師", id: 20, name: "林柏辰" },
+    { cadre: "本土語小老師", id: 26, name: "董子以" },
+    { cadre: "美感幾何", id: 22, name: "陳正澤" },
+    { cadre: "協助小老師", id: 23, name: "陳秉玄" }
+  ];
+
+  let seatsMap = {};
+  let isTeacherView = true;
+
+  const STORAGE_KEY = "801-seat-map";
+
+  function init() {
+    renderTopCadres();
+    loadSeats(false);
+    renderGrid();
+    renderStudentPool();
+  }
+
+  function showStatus(message) {
+    const box =
+      document.getElementById("statusBox");
+
+    box.textContent = message;
+    box.classList.add("show");
+
+    setTimeout(() => {
+      box.classList.remove("show");
+    }, 2500);
+  }
+
+  function toggleCadres() {
+    const grid =
+      document.getElementById(
+        "cadreTopGrid"
+      );
+
+    const icon =
+      document.getElementById(
+        "toggleIcon"
+      );
+
+    if (grid.style.display === "none") {
+      grid.style.display = "grid";
+      icon.textContent =
+        "🔼 點擊收合";
+    } else {
+      grid.style.display = "none";
+      icon.textContent =
+        "🔽 點擊展開";
+    }
+  }
+
+  function renderTopCadres() {
+    const container =
+      document.getElementById(
+        "cadreTopGrid"
+      );
+
+    container.innerHTML =
+      cadresData
+        .map(c => `
+          <div class="cadre-card-top">
+
+            <div class="cadre-role">
+              ${c.cadre}
+            </div>
+
+            <div class="cadre-name">
+              ${c.id}號 ${c.name}
+            </div>
+
+          </div>
+        `)
+        .join("");
+  }
+
+  function renderStudentPool() {
+    const pool =
+      document.getElementById(
+        "studentPool"
+      );
+
+    pool.innerHTML = "";
+
+    const assignedIds =
+      new Set(
+        Object.values(seatsMap)
+      );
+
+    const unassigned =
+      studentsData.filter(
+        s => !assignedIds.has(s.id)
+      );
+
+    if (
+      unassigned.length === 0
+    ) {
+      pool.innerHTML = `
+        <div class="all-assigned">
+          🎉 全班同學皆已指派入座
+        </div>
+      `;
+      return;
+    }
+
+    unassigned.forEach(student => {
+
+      const card =
+        document.createElement("div");
+
+      card.className =
+        "student-card";
+
+      card.draggable = true;
+
+      card.innerHTML = `
+        <span>
+          ${student.id}號
+          ${student.name}
+        </span>
+
+        <span style="opacity:.4;">
+          ⋮⋮
+        </span>
+      `;
+
+      card.ondragstart =
+        event => {
+          event.dataTransfer
+            .setData(
+              "text/plain",
+              student.id
+            );
+        };
+
+      pool.appendChild(card);
+    });
+  }
+
+  function renderGrid() {
+    const headerContainer =
+      document.getElementById(
+        "gridHeader"
+      );
+
+    const seatsContainer =
+      document.getElementById(
+        "gridSeats"
+      );
+
+    headerContainer.innerHTML = "";
+    seatsContainer.innerHTML = "";
+
+    for (
+      let c = 0;
+      c < 6;
+      c++
+    ) {
+      const colNum =
+        isTeacherView
+          ? c + 1
+          : 6 - c;
+
+      headerContainer.innerHTML += `
+        <div class="col-header">
+          第 ${colNum} 列
+        </div>
+      `;
+    }
+
+    const rowOrder =
+      isTeacherView
+        ? [4, 3, 2, 1, 0]
+        : [0, 1, 2, 3, 4];
+
+    rowOrder.forEach(r => {
+
+      for (
+        let c = 0;
+        c < 6;
+        c++
+      ) {
+
+        const realC =
+          isTeacherView
+            ? c
+            : 5 - c;
+
+        const box =
+          document.createElement("div");
+
+        if (
+          realC === 5 &&
+          r >= 3
+        ) {
+          box.className =
+            "seat-box walkway";
+
+          box.innerHTML =
+            "🚫 走道";
+        }
+
+        else {
+
+          const posKey =
+            `${r}_${realC}`;
+
+          const studentId =
+            seatsMap[posKey];
+
+          if (studentId) {
+
+            const student =
+              studentsData.find(
+                s =>
+                  s.id === studentId
+              );
+
+            box.className =
+              "seat-box seat-occupied";
+
+            box.draggable = true;
+
+            box.innerHTML = `
+              <div class="seat-id">
+                ${student.id} 號
+              </div>
+
+              <div class="seat-name">
+                ${student.name}
+              </div>
+            `;
+
+            box.ondragstart =
+              event => {
+                event.dataTransfer
+                  .setData(
+                    "text/plain",
+                    student.id
+                  );
+              };
+
+          }
+
+          else {
+
+            box.className =
+              "seat-box";
+
+            box.innerHTML = `
+              <div class="seat-id">
+                第 ${r + 1} 排
+              </div>
+
+              <div
+                style="
+                  color:#cbd5e1;
+                  font-weight:600;
+                "
+              >
+                空位
+              </div>
+            `;
+          }
+
+          box.ondragover =
+            event => {
+              event.preventDefault();
+
+              box.classList.add(
+                "drag-over"
+              );
+            };
+
+          box.ondragleave =
+            () => {
+              box.classList.remove(
+                "drag-over"
+              );
+            };
+
+          box.ondrop =
+            event => {
+
+              event.preventDefault();
+
+              box.classList.remove(
+                "drag-over"
+              );
+
+              const droppedId =
+                parseInt(
+                  event.dataTransfer
+                    .getData(
+                      "text/plain"
+                    )
+                );
+
+              if (!droppedId) {
+                return;
+              }
+
+              Object.keys(
+                seatsMap
+              ).forEach(key => {
+
+                if (
+                  seatsMap[key] ===
+                  droppedId
+                ) {
+                  delete seatsMap[key];
+                }
+              });
+
+              seatsMap[posKey] =
+                droppedId;
+
+              renderGrid();
+              renderStudentPool();
+            };
+        }
+
+        seatsContainer
+          .appendChild(box);
+      }
+    });
+  }
+
+  function toggleView() {
+    isTeacherView =
+      !isTeacherView;
+
+    document.getElementById(
+      "topPodium"
+    ).style.display =
+      isTeacherView
+        ? "none"
+        : "block";
+
+    document.getElementById(
+      "bottomPodium"
+    ).style.display =
+      isTeacherView
+        ? "block"
+        : "none";
+
+    document.getElementById(
+      "viewBtn"
+    ).textContent =
+      isTeacherView
+        ? "🔄 切換為學生視角"
+        : "🔄 切換為老師視角";
+
+    renderGrid();
+  }
+
+  function autoAssign() {
+    seatsMap = {};
+
+    const shuffled =
+      [...studentsData]
+        .sort(
+          () =>
+            Math.random() - 0.5
+        );
+
+    let index = 0;
+
+    for (
+      let r = 0;
+      r < 5;
+      r++
+    ) {
+      for (
+        let c = 0;
+        c < 6;
+        c++
+      ) {
+
+        if (
+          c === 5 &&
+          r >= 3
+        ) {
+          continue;
+        }
+
+        if (
+          index <
+          shuffled.length
+        ) {
+          seatsMap[
+            `${r}_${c}`
+          ] =
+            shuffled[index].id;
+
+          index++;
+        }
+      }
+    }
+
+    renderGrid();
+    renderStudentPool();
+
+    showStatus(
+      "🎲 已完成隨機排位，記得按「儲存目前座位」。"
+    );
+  }
+
+  function resetSeats() {
+    const confirmed =
+      confirm(
+        "確定要清空目前所有座位嗎？"
+      );
+
+    if (!confirmed) {
+      return;
+    }
+
+    seatsMap = {};
+
+    renderGrid();
+    renderStudentPool();
+
+    showStatus(
+      "🗑️ 已清空目前座位。"
+    );
+  }
+
+  function saveSeats() {
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify(seatsMap)
+    );
+
+    showStatus(
+      "💾 座位表已儲存在這台裝置。"
+    );
+  }
+
+  function loadSeats(
+    showMessage = true
+  ) {
+    const raw =
+      localStorage.getItem(
+        STORAGE_KEY
+      );
+
+    if (!raw) {
+
+      if (showMessage) {
+        showStatus(
+          "目前尚未儲存任何座位表。"
+        );
+      }
+
+      return;
+    }
+
+    try {
+      seatsMap =
+        JSON.parse(raw);
+
+      renderGrid();
+      renderStudentPool();
+
+      if (showMessage) {
+        showStatus(
+          "📂 已載入儲存的座位表。"
+        );
+      }
+
+    } catch {
+      showStatus(
+        "⚠️ 儲存資料讀取失敗。"
+      );
+    }
+  }
+
+  window.onload = init;
+</script>
+
+</body>
+</html>
