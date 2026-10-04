@@ -20,6 +20,7 @@
         "PingFang TC",
         "Microsoft JhengHei",
         sans-serif;
+
       background: #f8fafc;
       color: #1e293b;
     }
@@ -101,8 +102,21 @@
       border: 1px solid #cbd5e1;
       border-radius: 10px;
       background: white;
-      padding: 10px 12px;
+      color: #1e293b;
+      padding: 11px 12px;
       margin-bottom: 12px;
+      min-height: 46px;
+    }
+
+    select.control {
+      cursor: pointer;
+      appearance: auto;
+      -webkit-appearance: menulist;
+    }
+
+    select.control option {
+      color: #1e293b;
+      background: white;
     }
 
     .add-row {
@@ -116,7 +130,7 @@
       background: #4f46e5;
       color: white;
       font-weight: 800;
-      padding: 10px 12px;
+      padding: 11px 12px;
       cursor: pointer;
     }
 
@@ -305,6 +319,7 @@
     }
 
     .empty-state {
+      grid-column: 1 / -1;
       text-align: center;
       padding: 50px 20px;
       color: #64748b;
@@ -343,12 +358,26 @@
         font-size: 25px;
       }
 
+      .back-btn {
+        padding: 8px 10px;
+        font-size: 13px;
+      }
+
       .student-grid {
         grid-template-columns: 1fr;
       }
 
       .summary-row {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .summary-card {
+        padding: 10px 5px;
+        font-size: 13px;
+      }
+
+      .summary-card strong {
+        font-size: 20px;
       }
     }
   </style>
@@ -359,6 +388,7 @@
 <div class="page">
 
   <div class="topbar">
+
     <div class="title-group">
       <h1>📚 作業登記專區</h1>
       <p>班級切換・作業項目・繳交狀態</p>
@@ -370,6 +400,7 @@
     >
       🏠 返回主控台
     </button>
+
   </div>
 
   <div class="layout">
@@ -380,7 +411,12 @@
         🏫 選擇班級
       </div>
 
-      <select id="classSelect" class="control"></select>
+      <select id="classSelect" class="control">
+        <option value="801班">801班</option>
+        <option value="903班">903班</option>
+        <option value="904班">904班</option>
+        <option value="906班">906班</option>
+      </select>
 
       <div class="divider"></div>
 
@@ -389,6 +425,7 @@
       </div>
 
       <div class="add-row">
+
         <input
           id="newHomeworkInput"
           class="control"
@@ -402,6 +439,7 @@
         >
           ✨ 建立作業項目
         </button>
+
       </div>
 
       <div class="divider"></div>
@@ -410,16 +448,24 @@
         📋 作業清單
       </div>
 
-      <div id="homeworkList" class="homework-list"></div>
+      <div
+        id="homeworkList"
+        class="homework-list"
+      ></div>
 
       <div class="unfinished-box">
+
         <div class="unfinished-title">
-          ❗目前未繳學生
+          ❗ 目前未繳學生
         </div>
 
-        <div id="unfinishedList" class="unfinished-list">
+        <div
+          id="unfinishedList"
+          class="unfinished-list"
+        >
           請先選擇作業
         </div>
+
       </div>
 
     </aside>
@@ -427,12 +473,21 @@
     <main class="panel right-panel">
 
       <div class="class-header">
+
         <div>
           <h2 id="classTitle"></h2>
-          <div id="homeworkTitle" style="margin-top:6px;color:#64748b;"></div>
+
+          <div
+            id="homeworkTitle"
+            style="margin-top:6px;color:#64748b;"
+          ></div>
         </div>
 
-        <span id="classTag" class="class-tag"></span>
+        <span
+          id="classTag"
+          class="class-tag"
+        ></span>
+
       </div>
 
       <div class="summary-row">
@@ -479,7 +534,10 @@
 
       </div>
 
-      <div id="studentGrid" class="student-grid"></div>
+      <div
+        id="studentGrid"
+        class="student-grid"
+      ></div>
 
     </main>
 
@@ -488,45 +546,127 @@
 </div>
 
 <script>
+
   const CLASSES = {
+
     "801班": [
-      [1, "王喬昕"], [2, "吳岢曈"], [3, "李巧彤"], [4, "岳昀軒"],
-      [5, "林晏以"], [6, "林晨琳"], [7, "林芮妘"], [8, "林苡嫻"],
-      [9, "黃榆涵"], [10, "黃榆涵"], [11, "蔡可琳"], [12, "戴彤竹"],
-      [13, "羅羽翎"], [14, "羅昕彤"], [15, "林禹彤"], [16, "王楷文"],
-      [17, "王駿展"], [18, "吳軒佑"], [19, "李宇哲"], [20, "林柏辰"],
-      [21, "張品御"], [22, "陳正澤"], [23, "陳秉玄"], [24, "陳鼎硯"],
-      [25, "黃楙軒"], [26, "董子以"], [27, "劉家佑"], [28, "魏辰恩"]
+      [1, "王喬昕"],
+      [2, "吳岢曈"],
+      [3, "李巧彤"],
+      [4, "岳昀軒"],
+      [5, "林晏以"],
+      [6, "林晨琳"],
+      [7, "林芮妘"],
+      [8, "林苡嫻"],
+      [9, "黃榆涵"],
+      [10, "黃榆涵"],
+      [11, "蔡可琳"],
+      [12, "戴彤竹"],
+      [13, "羅羽翎"],
+      [14, "羅昕彤"],
+      [15, "林禹彤"],
+      [16, "王楷文"],
+      [17, "王駿展"],
+      [18, "吳軒佑"],
+      [19, "李宇哲"],
+      [20, "林柏辰"],
+      [21, "張品御"],
+      [22, "陳正澤"],
+      [23, "陳秉玄"],
+      [24, "陳鼎硯"],
+      [25, "黃楙軒"],
+      [26, "董子以"],
+      [27, "劉家佑"],
+      [28, "魏辰恩"]
     ],
 
     "903班": [
-      [1, "張莘妍"], [2, "梁芯瑜"], [3, "吳佳錹"], [4, "許秧秧"],
-      [5, "陳又綺"], [6, "高筱媗"], [7, "莊子玉"], [8, "吳愷昕"],
-      [9, "陳以恩"], [10, "蕭妤柔"], [11, "吳璥齡"], [12, "魏品儀"],
-      [15, "邱子恆"], [16, "張本維"], [17, "謝易宸"], [18, "游子宥"],
-      [19, "吳宇曜"], [20, "吳嘉恩"], [21, "丁沛紳"], [22, "林子佑"],
-      [23, "陳冠成"], [24, "徐國睿"], [25, "余冠憲"], [26, "黃家寶"],
-      [27, "張瑋志"], [28, "方仲祺"], [29, "林昱嘉"]
+      [1, "張莘妍"],
+      [2, "梁芯瑜"],
+      [3, "吳佳錹"],
+      [4, "許秧秧"],
+      [5, "陳又綺"],
+      [6, "高筱媗"],
+      [7, "莊子玉"],
+      [8, "吳愷昕"],
+      [9, "陳以恩"],
+      [10, "蕭妤柔"],
+      [11, "吳璥齡"],
+      [12, "魏品儀"],
+      [15, "邱子恆"],
+      [16, "張本維"],
+      [17, "謝易宸"],
+      [18, "游子宥"],
+      [19, "吳宇曜"],
+      [20, "吳嘉恩"],
+      [21, "丁沛紳"],
+      [22, "林子佑"],
+      [23, "陳冠成"],
+      [24, "徐國睿"],
+      [25, "余冠憲"],
+      [26, "黃家寶"],
+      [27, "張瑋志"],
+      [28, "方仲祺"],
+      [29, "林昱嘉"]
     ],
 
     "904班": [
-      [1, "戴嘉妤"], [2, "陳資晴"], [3, "傅詩穎"], [4, "張瞳恩"],
-      [5, "黃宇婕"], [6, "吳沛媛"], [7, "李妍芯"], [8, "鄭羽恩"],
-      [9, "林子桐"], [10, "許詠晴"], [11, "吳宸彤"], [12, "林品妍"],
-      [15, "趙右群"], [16, "林定毅"], [17, "潘子堯"], [18, "郭羿楷"],
-      [19, "張明哲"], [20, "吳宇曜"], [21, "魏永聖"], [22, "游承恩"],
-      [23, "胡琮浩"], [24, "李柏沅"], [25, "許育政"], [26, "宗旻恩"],
+      [1, "戴嘉妤"],
+      [2, "陳資晴"],
+      [3, "傅詩穎"],
+      [4, "張瞳恩"],
+      [5, "黃宇婕"],
+      [6, "吳沛媛"],
+      [7, "李妍芯"],
+      [8, "鄭羽恩"],
+      [9, "林子桐"],
+      [10, "許詠晴"],
+      [11, "吳宸彤"],
+      [12, "林品妍"],
+      [15, "趙右群"],
+      [16, "林定毅"],
+      [17, "潘子堯"],
+      [18, "郭羿楷"],
+      [19, "張明哲"],
+      [20, "吳宇曜"],
+      [21, "魏永聖"],
+      [22, "游承恩"],
+      [23, "胡琮浩"],
+      [24, "李柏沅"],
+      [25, "許育政"],
+      [26, "宗旻恩"],
       [27, "吳博硯"]
     ],
 
     "906班": [
-      [1, "陳亮妤"], [3, "董宜洳"], [4, "林庭瑜"], [5, "許淯淳"],
-      [6, "陳鈺軒"], [7, "林郁庭"], [8, "陳雅竹"], [9, "陳睿瑤"],
-      [10, "楊淇暄"], [11, "陳雨萱"], [12, "江霈穎"], [15, "陳逸恩"],
-      [16, "劉哲皓"], [17, "陳士愷"], [18, "李開哲"], [19, "林翊凱"],
-      [20, "林晉宇"], [21, "林釉荏"], [22, "林均昊"], [23, "賴羿軒"],
-      [24, "鄧仲喆"], [25, "吳羽翔"], [26, "林擎宇"], [27, "林旻勳"],
-      [28, "鄭凱軒"], [29, "李秉叡"], [31, "曾群文"], [32, "吳立丞"]
+      [1, "陳亮妤"],
+      [3, "董宜洳"],
+      [4, "林庭瑜"],
+      [5, "許淯淳"],
+      [6, "陳鈺軒"],
+      [7, "林郁庭"],
+      [8, "陳雅竹"],
+      [9, "陳睿瑤"],
+      [10, "楊淇暄"],
+      [11, "陳雨萱"],
+      [12, "江霈穎"],
+      [15, "陳逸恩"],
+      [16, "劉哲皓"],
+      [17, "陳士愷"],
+      [18, "李開哲"],
+      [19, "林翊凱"],
+      [20, "林晉宇"],
+      [21, "林釉荏"],
+      [22, "林均昊"],
+      [23, "賴羿軒"],
+      [24, "鄧仲喆"],
+      [25, "吳羽翔"],
+      [26, "林擎宇"],
+      [27, "林旻勳"],
+      [28, "鄭凱軒"],
+      [29, "李秉叡"],
+      [31, "曾群文"],
+      [32, "吳立丞"]
     ]
   };
 
@@ -534,17 +674,26 @@
   let currentHomeworkId = null;
   let currentFilter = "all";
 
+  const classSelect =
+    document.getElementById("classSelect");
+
   function classStorageKey(className) {
     return `homework-data-${className}`;
   }
 
   function loadClassData(className) {
-    const raw = localStorage.getItem(classStorageKey(className));
+
+    const raw =
+      localStorage.getItem(
+        classStorageKey(className)
+      );
 
     if (raw) {
       try {
         return JSON.parse(raw);
-      } catch {}
+      } catch (error) {
+        console.error(error);
+      }
     }
 
     return {
@@ -552,7 +701,10 @@
     };
   }
 
-  function saveClassData(className, data) {
+  function saveClassData(
+    className,
+    data
+  ) {
     localStorage.setItem(
       classStorageKey(className),
       JSON.stringify(data)
@@ -560,197 +712,353 @@
   }
 
   function getStudents() {
-    return CLASSES[currentClass].map(
-      ([id, name]) => ({ id, name })
-    );
-  }
-
-  function initializeClassSelect() {
-    const select = document.getElementById("classSelect");
-
-    select.innerHTML = Object.keys(CLASSES)
-      .map(name => `<option value="${name}">${name}</option>`)
-      .join("");
-
-    select.value = currentClass;
-
-    select.addEventListener("change", () => {
-      currentClass = select.value;
-      currentHomeworkId = null;
-      renderAll();
-    });
+    return CLASSES[currentClass]
+      .map(([id, name]) => ({
+        id,
+        name
+      }));
   }
 
   function addHomework() {
-    const input = document.getElementById("newHomeworkInput");
-    const title = input.value.trim();
+
+    const input =
+      document.getElementById(
+        "newHomeworkInput"
+      );
+
+    const title =
+      input.value.trim();
 
     if (!title) {
       alert("請輸入作業名稱。");
       return;
     }
 
-    const data = loadClassData(currentClass);
+    const data =
+      loadClassData(
+        currentClass
+      );
 
-    const duplicated = data.homeworks.some(
-      hw => hw.title === title
-    );
+    const duplicated =
+      data.homeworks.some(
+        hw => hw.title === title
+      );
 
     if (duplicated) {
-      alert("這個作業名稱已經存在。");
+      alert(
+        "這個作業名稱已經存在。"
+      );
       return;
     }
 
-    const students = getStudents();
+    const students =
+      getStudents();
 
     const submissions = {};
 
     students.forEach(student => {
-      submissions[student.id] = false;
+      submissions[student.id] =
+        false;
     });
 
     const homework = {
-      id: Date.now().toString(),
+      id:
+        Date.now().toString(),
       title,
       submissions
     };
 
-    data.homeworks.push(homework);
+    data.homeworks.push(
+      homework
+    );
 
-    saveClassData(currentClass, data);
+    saveClassData(
+      currentClass,
+      data
+    );
 
-    currentHomeworkId = homework.id;
+    currentHomeworkId =
+      homework.id;
 
     input.value = "";
 
     renderAll();
   }
 
-  function setSubmission(studentId, paid) {
-    const data = loadClassData(currentClass);
+  function setSubmission(
+    studentId,
+    paid
+  ) {
 
-    const homework = data.homeworks.find(
-      hw => hw.id === currentHomeworkId
+    const data =
+      loadClassData(
+        currentClass
+      );
+
+    const homework =
+      data.homeworks.find(
+        hw =>
+          hw.id ===
+          currentHomeworkId
+      );
+
+    if (!homework) {
+      return;
+    }
+
+    homework.submissions[
+      studentId
+    ] = paid;
+
+    saveClassData(
+      currentClass,
+      data
     );
-
-    if (!homework) return;
-
-    homework.submissions[studentId] = paid;
-
-    saveClassData(currentClass, data);
 
     renderRightPanel();
     renderHomeworkList();
   }
 
   function getCurrentHomework() {
-    const data = loadClassData(currentClass);
 
-    if (!currentHomeworkId) {
-      const firstUnfinished = data.homeworks.find(hw => {
-        return Object.values(hw.submissions).some(v => !v);
-      });
+    const data =
+      loadClassData(
+        currentClass
+      );
 
-      const fallback = firstUnfinished || data.homeworks[0];
+    const existing =
+      data.homeworks.find(
+        hw =>
+          hw.id ===
+          currentHomeworkId
+      );
 
-      if (fallback) {
-        currentHomeworkId = fallback.id;
-      }
+    if (existing) {
+      return existing;
     }
 
-    return data.homeworks.find(
-      hw => hw.id === currentHomeworkId
-    ) || null;
+    const unfinished =
+      data.homeworks.find(
+        hw =>
+          !homeworkCompleted(hw)
+      );
+
+    const fallback =
+      unfinished ||
+      data.homeworks[0];
+
+    if (fallback) {
+      currentHomeworkId =
+        fallback.id;
+
+      return fallback;
+    }
+
+    currentHomeworkId =
+      null;
+
+    return null;
   }
 
-  function homeworkCompleted(homework) {
-    const students = getStudents();
+  function homeworkCompleted(
+    homework
+  ) {
 
-    return students.every(student => {
-      return homework.submissions[student.id] === true;
-    });
+    const students =
+      getStudents();
+
+    return students.every(
+      student =>
+        homework.submissions[
+          student.id
+        ] === true
+    );
   }
 
   function renderHomeworkList() {
-    const container = document.getElementById("homeworkList");
-    const data = loadClassData(currentClass);
+
+    const container =
+      document.getElementById(
+        "homeworkList"
+      );
+
+    const data =
+      loadClassData(
+        currentClass
+      );
 
     container.innerHTML = "";
 
-    if (data.homeworks.length === 0) {
+    if (
+      data.homeworks.length === 0
+    ) {
+
       container.innerHTML = `
-        <div style="color:#64748b;font-size:14px;">
+        <div
+          style="
+            color:#64748b;
+            font-size:14px;
+          "
+        >
           目前尚無作業項目。
         </div>
       `;
+
       return;
     }
 
     const active = [];
     const completed = [];
 
-    data.homeworks.forEach(hw => {
-      if (homeworkCompleted(hw)) {
-        completed.push(hw);
-      } else {
-        active.push(hw);
+    data.homeworks.forEach(
+      homework => {
+
+        if (
+          homeworkCompleted(
+            homework
+          )
+        ) {
+          completed.push(
+            homework
+          );
+        } else {
+          active.push(
+            homework
+          );
+        }
       }
-    });
+    );
 
-    const ordered = [...active, ...completed];
+    const ordered = [
+      ...active,
+      ...completed
+    ];
 
-    ordered.forEach(hw => {
-      const button = document.createElement("button");
+    ordered.forEach(
+      homework => {
 
-      button.className = "homework-btn";
+        const button =
+          document.createElement(
+            "button"
+          );
 
-      if (hw.id === currentHomeworkId) {
-        button.classList.add("active");
+        button.className =
+          "homework-btn";
+
+        if (
+          homework.id ===
+          currentHomeworkId
+        ) {
+          button.classList.add(
+            "active"
+          );
+        }
+
+        if (
+          homeworkCompleted(
+            homework
+          )
+        ) {
+          button.classList.add(
+            "completed"
+          );
+        }
+
+        button.textContent =
+          `${
+            homeworkCompleted(
+              homework
+            )
+              ? "✅"
+              : "📘"
+          } ${homework.title}`;
+
+        button.onclick = () => {
+          currentHomeworkId =
+            homework.id;
+
+          renderAll();
+        };
+
+        container.appendChild(
+          button
+        );
       }
-
-      if (homeworkCompleted(hw)) {
-        button.classList.add("completed");
-      }
-
-      button.textContent =
-        `${homeworkCompleted(hw) ? "✅ " : "📘 "}${hw.title}`;
-
-      button.onclick = () => {
-        currentHomeworkId = hw.id;
-        renderAll();
-      };
-
-      container.appendChild(button);
-    });
+    );
   }
 
   function renderRightPanel() {
-    const students = getStudents();
-    const homework = getCurrentHomework();
 
-    const classTitle = document.getElementById("classTitle");
-    const homeworkTitle = document.getElementById("homeworkTitle");
-    const classTag = document.getElementById("classTag");
-    const grid = document.getElementById("studentGrid");
+    const students =
+      getStudents();
 
-    classTitle.textContent = `📋 ${currentClass} 作業登記`;
+    const homework =
+      getCurrentHomework();
 
-    if (currentClass === "801班") {
-      classTag.textContent = "👑 導師班級";
-      classTag.className = "class-tag tag-801";
+    const classTitle =
+      document.getElementById(
+        "classTitle"
+      );
+
+    const homeworkTitle =
+      document.getElementById(
+        "homeworkTitle"
+      );
+
+    const classTag =
+      document.getElementById(
+        "classTag"
+      );
+
+    const grid =
+      document.getElementById(
+        "studentGrid"
+      );
+
+    classTitle.textContent =
+      `📋 ${currentClass} 作業登記`;
+
+    if (
+      currentClass ===
+      "801班"
+    ) {
+
+      classTag.textContent =
+        "👑 導師班級";
+
+      classTag.className =
+        "class-tag tag-801";
+
     } else {
-      classTag.textContent = "📖 任教英文班級";
-      classTag.className = "class-tag tag-teaching";
+
+      classTag.textContent =
+        "📖 任教英文班級";
+
+      classTag.className =
+        "class-tag tag-teaching";
     }
 
     if (!homework) {
-      homeworkTitle.textContent = "請先新增作業項目";
 
-      document.getElementById("paidCount").textContent = "0";
-      document.getElementById("unpaidCount").textContent = "0";
-      document.getElementById("totalCount").textContent = students.length;
+      homeworkTitle.textContent =
+        "請先新增作業項目";
 
-      document.getElementById("unfinishedList").textContent =
+      document.getElementById(
+        "paidCount"
+      ).textContent = "0";
+
+      document.getElementById(
+        "unpaidCount"
+      ).textContent = "0";
+
+      document.getElementById(
+        "totalCount"
+      ).textContent =
+        students.length;
+
+      document.getElementById(
+        "unfinishedList"
+      ).textContent =
         "請先新增或選擇作業。";
 
       grid.innerHTML = `
@@ -762,53 +1070,103 @@
       return;
     }
 
-    homeworkTitle.textContent = `目前作業：${homework.title}`;
+    homeworkTitle.textContent =
+      `目前作業：${homework.title}`;
 
     let paidCount = 0;
+
     const unpaidStudents = [];
 
     grid.innerHTML = "";
 
     students.forEach(student => {
-      const paid = homework.submissions[student.id] === true;
+
+      const paid =
+        homework.submissions[
+          student.id
+        ] === true;
 
       if (paid) {
         paidCount++;
       } else {
-        unpaidStudents.push(student);
+        unpaidStudents.push(
+          student
+        );
       }
 
-      if (currentFilter === "unpaid" && paid) {
+      if (
+        currentFilter ===
+          "unpaid" &&
+        paid
+      ) {
         return;
       }
 
-      if (currentFilter === "paid" && !paid) {
+      if (
+        currentFilter ===
+          "paid" &&
+        !paid
+      ) {
         return;
       }
 
-      const card = document.createElement("div");
+      const card =
+        document.createElement(
+          "div"
+        );
 
       card.className =
         "student-card" +
-        (paid ? "" : " unpaid");
+        (
+          paid
+            ? ""
+            : " unpaid"
+        );
 
       card.innerHTML = `
         <div class="student-name">
-          ${student.id}號 ${student.name}
+          ${student.id}號
+          ${student.name}
         </div>
 
         <div class="status-buttons">
 
           <button
-            class="status-btn paid ${paid ? "active" : ""}"
-            onclick="setSubmission(${student.id}, true)"
+            class="
+              status-btn
+              paid
+              ${
+                paid
+                  ? "active"
+                  : ""
+              }
+            "
+            onclick="
+              setSubmission(
+                ${student.id},
+                true
+              )
+            "
           >
             ✅ 已繳
           </button>
 
           <button
-            class="status-btn unpaid ${!paid ? "active" : ""}"
-            onclick="setSubmission(${student.id}, false)"
+            class="
+              status-btn
+              unpaid
+              ${
+                !paid
+                  ? "active"
+                  : ""
+              }
+            "
+            onclick="
+              setSubmission(
+                ${student.id},
+                false
+              )
+            "
           >
             ❌ 未繳
           </button>
@@ -819,25 +1177,42 @@
       grid.appendChild(card);
     });
 
-    document.getElementById("paidCount").textContent =
+    document.getElementById(
+      "paidCount"
+    ).textContent =
       paidCount;
 
-    document.getElementById("unpaidCount").textContent =
-      students.length - paidCount;
+    document.getElementById(
+      "unpaidCount"
+    ).textContent =
+      students.length -
+      paidCount;
 
-    document.getElementById("totalCount").textContent =
+    document.getElementById(
+      "totalCount"
+    ).textContent =
       students.length;
 
     const unfinishedList =
-      document.getElementById("unfinishedList");
+      document.getElementById(
+        "unfinishedList"
+      );
 
-    if (unpaidStudents.length === 0) {
+    if (
+      unpaidStudents.length === 0
+    ) {
+
       unfinishedList.innerHTML =
         "🎉 全班皆已繳齊！";
+
     } else {
+
       unfinishedList.innerHTML =
         unpaidStudents
-          .map(s => `${s.id}號 ${s.name}`)
+          .map(
+            student =>
+              `${student.id}號 ${student.name}`
+          )
           .join("<br>");
     }
   }
@@ -848,895 +1223,82 @@
     renderRightPanel();
   }
 
-  document
-    .querySelectorAll(".filter-btn")
-    .forEach(btn => {
-      btn.addEventListener("click", () => {
-        document
-          .querySelectorAll(".filter-btn")
-          .forEach(b => b.classList.remove("active"));
+  classSelect.addEventListener(
+    "change",
+    function () {
+
+      currentClass =
+        this.value;
+
+      currentHomeworkId =
+        null;
+
+      currentFilter =
+        "all";
+
+      document
+        .querySelectorAll(
+          ".filter-btn"
+        )
+        .forEach(
+          button =>
+            button.classList.remove(
+              "active"
+            )
+        );
+
+      document
+        .querySelector(
+          '[data-filter="all"]'
+        )
+        .classList.add(
+          "active"
+        );
 
-        btn.classList.add("active");
-
-        currentFilter = btn.dataset.filter;
-
-        renderRightPanel();
-      });
-    });
-
-  initializeClassSelect();
-  renderAll();
-</script>
-
-</body>
-</html><!DOCTYPE html>
-<html lang="zh-Hant">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>作業登記專區</title>
-
-  <style>
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      font-family:
-        -apple-system,
-        BlinkMacSystemFont,
-        "SF Pro TC",
-        "PingFang TC",
-        "Microsoft JhengHei",
-        sans-serif;
-      background: #f8fafc;
-      color: #1e293b;
-    }
-
-    button,
-    input,
-    select {
-      font: inherit;
-    }
-
-    .page {
-      max-width: 1500px;
-      margin: 0 auto;
-      padding: 20px;
-    }
-
-    .topbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 16px;
-      margin-bottom: 20px;
-    }
-
-    .title-group h1 {
-      margin: 0;
-      font-size: 32px;
-      font-weight: 800;
-    }
-
-    .title-group p {
-      margin: 6px 0 0;
-      color: #64748b;
-      font-size: 14px;
-    }
-
-    .back-btn {
-      border: 1px solid #cbd5e1;
-      background: white;
-      color: #334155;
-      padding: 10px 16px;
-      border-radius: 10px;
-      cursor: pointer;
-      font-weight: 700;
-    }
-
-    .layout {
-      display: grid;
-      grid-template-columns: 310px 1fr;
-      gap: 20px;
-      align-items: start;
-    }
-
-    .panel {
-      background: white;
-      border: 1px solid #e2e8f0;
-      border-radius: 16px;
-      box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
-    }
-
-    .left-panel {
-      padding: 18px;
-      position: sticky;
-      top: 20px;
-    }
-
-    .right-panel {
-      padding: 18px;
-    }
-
-    .section-title {
-      font-size: 17px;
-      font-weight: 800;
-      margin-bottom: 10px;
-    }
-
-    .control {
-      width: 100%;
-      border: 1px solid #cbd5e1;
-      border-radius: 10px;
-      background: white;
-      padding: 10px 12px;
-      margin-bottom: 12px;
-    }
-
-    .add-row {
-      display: grid;
-      gap: 8px;
-    }
-
-    .primary-btn {
-      border: none;
-      border-radius: 10px;
-      background: #4f46e5;
-      color: white;
-      font-weight: 800;
-      padding: 10px 12px;
-      cursor: pointer;
-    }
-
-    .primary-btn:hover {
-      background: #4338ca;
-    }
-
-    .divider {
-      height: 1px;
-      background: #e2e8f0;
-      margin: 18px 0;
-    }
-
-    .homework-list {
-      display: grid;
-      gap: 8px;
-    }
-
-    .homework-btn {
-      width: 100%;
-      text-align: left;
-      border: 1px solid #cbd5e1;
-      background: white;
-      border-radius: 10px;
-      padding: 10px 12px;
-      cursor: pointer;
-      color: #475569;
-      font-weight: 700;
-    }
-
-    .homework-btn.active {
-      background: #eef2ff;
-      border-color: #818cf8;
-      color: #3730a3;
-    }
-
-    .homework-btn.completed {
-      opacity: 0.6;
-    }
-
-    .unfinished-box {
-      margin-top: 18px;
-      background: #fef2f2;
-      border: 1px solid #fecaca;
-      border-radius: 12px;
-      padding: 14px;
-    }
-
-    .unfinished-title {
-      font-weight: 800;
-      color: #b91c1c;
-      margin-bottom: 8px;
-    }
-
-    .unfinished-list {
-      color: #7f1d1d;
-      font-size: 14px;
-      line-height: 1.7;
-    }
-
-    .class-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
-      margin-bottom: 14px;
-    }
-
-    .class-header h2 {
-      margin: 0;
-      font-size: 22px;
-    }
-
-    .class-tag {
-      display: inline-block;
-      padding: 5px 12px;
-      border-radius: 999px;
-      color: white;
-      font-size: 13px;
-      font-weight: 800;
-    }
-
-    .tag-801 {
-      background: #3b82f6;
-    }
-
-    .tag-teaching {
-      background: #10b981;
-    }
-
-    .summary-row {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      margin-bottom: 16px;
-    }
-
-    .summary-card {
-      border-radius: 12px;
-      padding: 13px;
-      text-align: center;
-      border: 1px solid #e2e8f0;
-      background: #f8fafc;
-    }
-
-    .summary-card strong {
-      display: block;
-      font-size: 24px;
-      margin-top: 4px;
-    }
-
-    .option-row {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-bottom: 16px;
-    }
-
-    .filter-btn {
-      border: 1px solid #cbd5e1;
-      background: white;
-      border-radius: 9px;
-      padding: 8px 11px;
-      cursor: pointer;
-      font-weight: 700;
-      color: #475569;
-    }
-
-    .filter-btn.active {
-      background: #e0f2fe;
-      border-color: #38bdf8;
-      color: #0369a1;
-    }
-
-    .student-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-    }
-
-    .student-card {
-      border: 1px solid #dbeafe;
-      border-radius: 14px;
-      padding: 14px;
-      background: white;
-    }
-
-    .student-card.unpaid {
-      border-color: #fca5a5;
-      background: #fffafa;
-    }
-
-    .student-name {
-      font-size: 17px;
-      font-weight: 800;
-      margin-bottom: 10px;
-    }
-
-    .status-buttons {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 7px;
-    }
-
-    .status-btn {
-      border: 1px solid #cbd5e1;
-      border-radius: 9px;
-      padding: 9px 6px;
-      cursor: pointer;
-      font-weight: 800;
-      background: #f8fafc;
-      color: #64748b;
-    }
-
-    .status-btn.paid.active {
-      background: #dcfce7;
-      border-color: #86efac;
-      color: #166534;
-    }
-
-    .status-btn.unpaid.active {
-      background: #fee2e2;
-      border-color: #fca5a5;
-      color: #991b1b;
-    }
-
-    .empty-state {
-      text-align: center;
-      padding: 50px 20px;
-      color: #64748b;
-    }
-
-    @media (max-width: 1000px) {
-      .student-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-
-      .layout {
-        grid-template-columns: 280px 1fr;
-      }
-    }
-
-    @media (max-width: 800px) {
-      .layout {
-        grid-template-columns: 1fr;
-      }
-
-      .left-panel {
-        position: static;
-      }
-    }
-
-    @media (max-width: 600px) {
-      .page {
-        padding: 12px;
-      }
-
-      .topbar {
-        align-items: flex-start;
-      }
-
-      .title-group h1 {
-        font-size: 25px;
-      }
-
-      .student-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .summary-row {
-        grid-template-columns: 1fr;
-      }
-    }
-  </style>
-</head>
-
-<body>
-
-<div class="page">
-
-  <div class="topbar">
-    <div class="title-group">
-      <h1>📚 作業登記專區</h1>
-      <p>班級切換・作業項目・繳交狀態</p>
-    </div>
-
-    <button
-      class="back-btn"
-      onclick="window.location.href='index.html'"
-    >
-      🏠 返回主控台
-    </button>
-  </div>
-
-  <div class="layout">
-
-    <aside class="panel left-panel">
-
-      <div class="section-title">
-        🏫 選擇班級
-      </div>
-
-      <select id="classSelect" class="control"></select>
-
-      <div class="divider"></div>
-
-      <div class="section-title">
-        ➕ 新增作業
-      </div>
-
-      <div class="add-row">
-        <input
-          id="newHomeworkInput"
-          class="control"
-          type="text"
-          placeholder="例如：英文雜誌 L3"
-        >
-
-        <button
-          class="primary-btn"
-          onclick="addHomework()"
-        >
-          ✨ 建立作業項目
-        </button>
-      </div>
-
-      <div class="divider"></div>
-
-      <div class="section-title">
-        📋 作業清單
-      </div>
-
-      <div id="homeworkList" class="homework-list"></div>
-
-      <div class="unfinished-box">
-        <div class="unfinished-title">
-          ❗目前未繳學生
-        </div>
-
-        <div id="unfinishedList" class="unfinished-list">
-          請先選擇作業
-        </div>
-      </div>
-
-    </aside>
-
-    <main class="panel right-panel">
-
-      <div class="class-header">
-        <div>
-          <h2 id="classTitle"></h2>
-          <div id="homeworkTitle" style="margin-top:6px;color:#64748b;"></div>
-        </div>
-
-        <span id="classTag" class="class-tag"></span>
-      </div>
-
-      <div class="summary-row">
-
-        <div class="summary-card">
-          已繳
-          <strong id="paidCount">0</strong>
-        </div>
-
-        <div class="summary-card">
-          未繳
-          <strong id="unpaidCount">0</strong>
-        </div>
-
-        <div class="summary-card">
-          總人數
-          <strong id="totalCount">0</strong>
-        </div>
-
-      </div>
-
-      <div class="option-row">
-
-        <button
-          class="filter-btn active"
-          data-filter="all"
-        >
-          👥 全部
-        </button>
-
-        <button
-          class="filter-btn"
-          data-filter="unpaid"
-        >
-          ❗ 只看未繳
-        </button>
-
-        <button
-          class="filter-btn"
-          data-filter="paid"
-        >
-          ✅ 只看已繳
-        </button>
-
-      </div>
-
-      <div id="studentGrid" class="student-grid"></div>
-
-    </main>
-
-  </div>
-
-</div>
-
-<script>
-  const CLASSES = {
-    "801班": [
-      [1, "王喬昕"], [2, "吳岢曈"], [3, "李巧彤"], [4, "岳昀軒"],
-      [5, "林晏以"], [6, "林晨琳"], [7, "林芮妘"], [8, "林苡嫻"],
-      [9, "黃榆涵"], [10, "黃榆涵"], [11, "蔡可琳"], [12, "戴彤竹"],
-      [13, "羅羽翎"], [14, "羅昕彤"], [15, "林禹彤"], [16, "王楷文"],
-      [17, "王駿展"], [18, "吳軒佑"], [19, "李宇哲"], [20, "林柏辰"],
-      [21, "張品御"], [22, "陳正澤"], [23, "陳秉玄"], [24, "陳鼎硯"],
-      [25, "黃楙軒"], [26, "董子以"], [27, "劉家佑"], [28, "魏辰恩"]
-    ],
-
-    "903班": [
-      [1, "張莘妍"], [2, "梁芯瑜"], [3, "吳佳錹"], [4, "許秧秧"],
-      [5, "陳又綺"], [6, "高筱媗"], [7, "莊子玉"], [8, "吳愷昕"],
-      [9, "陳以恩"], [10, "蕭妤柔"], [11, "吳璥齡"], [12, "魏品儀"],
-      [15, "邱子恆"], [16, "張本維"], [17, "謝易宸"], [18, "游子宥"],
-      [19, "吳宇曜"], [20, "吳嘉恩"], [21, "丁沛紳"], [22, "林子佑"],
-      [23, "陳冠成"], [24, "徐國睿"], [25, "余冠憲"], [26, "黃家寶"],
-      [27, "張瑋志"], [28, "方仲祺"], [29, "林昱嘉"]
-    ],
-
-    "904班": [
-      [1, "戴嘉妤"], [2, "陳資晴"], [3, "傅詩穎"], [4, "張瞳恩"],
-      [5, "黃宇婕"], [6, "吳沛媛"], [7, "李妍芯"], [8, "鄭羽恩"],
-      [9, "林子桐"], [10, "許詠晴"], [11, "吳宸彤"], [12, "林品妍"],
-      [15, "趙右群"], [16, "林定毅"], [17, "潘子堯"], [18, "郭羿楷"],
-      [19, "張明哲"], [20, "吳宇曜"], [21, "魏永聖"], [22, "游承恩"],
-      [23, "胡琮浩"], [24, "李柏沅"], [25, "許育政"], [26, "宗旻恩"],
-      [27, "吳博硯"]
-    ],
-
-    "906班": [
-      [1, "陳亮妤"], [3, "董宜洳"], [4, "林庭瑜"], [5, "許淯淳"],
-      [6, "陳鈺軒"], [7, "林郁庭"], [8, "陳雅竹"], [9, "陳睿瑤"],
-      [10, "楊淇暄"], [11, "陳雨萱"], [12, "江霈穎"], [15, "陳逸恩"],
-      [16, "劉哲皓"], [17, "陳士愷"], [18, "李開哲"], [19, "林翊凱"],
-      [20, "林晉宇"], [21, "林釉荏"], [22, "林均昊"], [23, "賴羿軒"],
-      [24, "鄧仲喆"], [25, "吳羽翔"], [26, "林擎宇"], [27, "林旻勳"],
-      [28, "鄭凱軒"], [29, "李秉叡"], [31, "曾群文"], [32, "吳立丞"]
-    ]
-  };
-
-  let currentClass = "801班";
-  let currentHomeworkId = null;
-  let currentFilter = "all";
-
-  function classStorageKey(className) {
-    return `homework-data-${className}`;
-  }
-
-  function loadClassData(className) {
-    const raw = localStorage.getItem(classStorageKey(className));
-
-    if (raw) {
-      try {
-        return JSON.parse(raw);
-      } catch {}
-    }
-
-    return {
-      homeworks: []
-    };
-  }
-
-  function saveClassData(className, data) {
-    localStorage.setItem(
-      classStorageKey(className),
-      JSON.stringify(data)
-    );
-  }
-
-  function getStudents() {
-    return CLASSES[currentClass].map(
-      ([id, name]) => ({ id, name })
-    );
-  }
-
-  function initializeClassSelect() {
-    const select = document.getElementById("classSelect");
-
-    select.innerHTML = Object.keys(CLASSES)
-      .map(name => `<option value="${name}">${name}</option>`)
-      .join("");
-
-    select.value = currentClass;
-
-    select.addEventListener("change", () => {
-      currentClass = select.value;
-      currentHomeworkId = null;
       renderAll();
-    });
-  }
-
-  function addHomework() {
-    const input = document.getElementById("newHomeworkInput");
-    const title = input.value.trim();
-
-    if (!title) {
-      alert("請輸入作業名稱。");
-      return;
     }
-
-    const data = loadClassData(currentClass);
-
-    const duplicated = data.homeworks.some(
-      hw => hw.title === title
-    );
-
-    if (duplicated) {
-      alert("這個作業名稱已經存在。");
-      return;
-    }
-
-    const students = getStudents();
-
-    const submissions = {};
-
-    students.forEach(student => {
-      submissions[student.id] = false;
-    });
-
-    const homework = {
-      id: Date.now().toString(),
-      title,
-      submissions
-    };
-
-    data.homeworks.push(homework);
-
-    saveClassData(currentClass, data);
-
-    currentHomeworkId = homework.id;
-
-    input.value = "";
-
-    renderAll();
-  }
-
-  function setSubmission(studentId, paid) {
-    const data = loadClassData(currentClass);
-
-    const homework = data.homeworks.find(
-      hw => hw.id === currentHomeworkId
-    );
-
-    if (!homework) return;
-
-    homework.submissions[studentId] = paid;
-
-    saveClassData(currentClass, data);
-
-    renderRightPanel();
-    renderHomeworkList();
-  }
-
-  function getCurrentHomework() {
-    const data = loadClassData(currentClass);
-
-    if (!currentHomeworkId) {
-      const firstUnfinished = data.homeworks.find(hw => {
-        return Object.values(hw.submissions).some(v => !v);
-      });
-
-      const fallback = firstUnfinished || data.homeworks[0];
-
-      if (fallback) {
-        currentHomeworkId = fallback.id;
-      }
-    }
-
-    return data.homeworks.find(
-      hw => hw.id === currentHomeworkId
-    ) || null;
-  }
-
-  function homeworkCompleted(homework) {
-    const students = getStudents();
-
-    return students.every(student => {
-      return homework.submissions[student.id] === true;
-    });
-  }
-
-  function renderHomeworkList() {
-    const container = document.getElementById("homeworkList");
-    const data = loadClassData(currentClass);
-
-    container.innerHTML = "";
-
-    if (data.homeworks.length === 0) {
-      container.innerHTML = `
-        <div style="color:#64748b;font-size:14px;">
-          目前尚無作業項目。
-        </div>
-      `;
-      return;
-    }
-
-    const active = [];
-    const completed = [];
-
-    data.homeworks.forEach(hw => {
-      if (homeworkCompleted(hw)) {
-        completed.push(hw);
-      } else {
-        active.push(hw);
-      }
-    });
-
-    const ordered = [...active, ...completed];
-
-    ordered.forEach(hw => {
-      const button = document.createElement("button");
-
-      button.className = "homework-btn";
-
-      if (hw.id === currentHomeworkId) {
-        button.classList.add("active");
-      }
-
-      if (homeworkCompleted(hw)) {
-        button.classList.add("completed");
-      }
-
-      button.textContent =
-        `${homeworkCompleted(hw) ? "✅ " : "📘 "}${hw.title}`;
-
-      button.onclick = () => {
-        currentHomeworkId = hw.id;
-        renderAll();
-      };
-
-      container.appendChild(button);
-    });
-  }
-
-  function renderRightPanel() {
-    const students = getStudents();
-    const homework = getCurrentHomework();
-
-    const classTitle = document.getElementById("classTitle");
-    const homeworkTitle = document.getElementById("homeworkTitle");
-    const classTag = document.getElementById("classTag");
-    const grid = document.getElementById("studentGrid");
-
-    classTitle.textContent = `📋 ${currentClass} 作業登記`;
-
-    if (currentClass === "801班") {
-      classTag.textContent = "👑 導師班級";
-      classTag.className = "class-tag tag-801";
-    } else {
-      classTag.textContent = "📖 任教英文班級";
-      classTag.className = "class-tag tag-teaching";
-    }
-
-    if (!homework) {
-      homeworkTitle.textContent = "請先新增作業項目";
-
-      document.getElementById("paidCount").textContent = "0";
-      document.getElementById("unpaidCount").textContent = "0";
-      document.getElementById("totalCount").textContent = students.length;
-
-      document.getElementById("unfinishedList").textContent =
-        "請先新增或選擇作業。";
-
-      grid.innerHTML = `
-        <div class="empty-state">
-          目前尚未建立作業項目。
-        </div>
-      `;
-
-      return;
-    }
-
-    homeworkTitle.textContent = `目前作業：${homework.title}`;
-
-    let paidCount = 0;
-    const unpaidStudents = [];
-
-    grid.innerHTML = "";
-
-    students.forEach(student => {
-      const paid = homework.submissions[student.id] === true;
-
-      if (paid) {
-        paidCount++;
-      } else {
-        unpaidStudents.push(student);
-      }
-
-      if (currentFilter === "unpaid" && paid) {
-        return;
-      }
-
-      if (currentFilter === "paid" && !paid) {
-        return;
-      }
-
-      const card = document.createElement("div");
-
-      card.className =
-        "student-card" +
-        (paid ? "" : " unpaid");
-
-      card.innerHTML = `
-        <div class="student-name">
-          ${student.id}號 ${student.name}
-        </div>
-
-        <div class="status-buttons">
-
-          <button
-            class="status-btn paid ${paid ? "active" : ""}"
-            onclick="setSubmission(${student.id}, true)"
-          >
-            ✅ 已繳
-          </button>
-
-          <button
-            class="status-btn unpaid ${!paid ? "active" : ""}"
-            onclick="setSubmission(${student.id}, false)"
-          >
-            ❌ 未繳
-          </button>
-
-        </div>
-      `;
-
-      grid.appendChild(card);
-    });
-
-    document.getElementById("paidCount").textContent =
-      paidCount;
-
-    document.getElementById("unpaidCount").textContent =
-      students.length - paidCount;
-
-    document.getElementById("totalCount").textContent =
-      students.length;
-
-    const unfinishedList =
-      document.getElementById("unfinishedList");
-
-    if (unpaidStudents.length === 0) {
-      unfinishedList.innerHTML =
-        "🎉 全班皆已繳齊！";
-    } else {
-      unfinishedList.innerHTML =
-        unpaidStudents
-          .map(s => `${s.id}號 ${s.name}`)
-          .join("<br>");
-    }
-  }
-
-  function renderAll() {
-    getCurrentHomework();
-    renderHomeworkList();
-    renderRightPanel();
-  }
+  );
 
   document
-    .querySelectorAll(".filter-btn")
-    .forEach(btn => {
-      btn.addEventListener("click", () => {
-        document
-          .querySelectorAll(".filter-btn")
-          .forEach(b => b.classList.remove("active"));
+    .querySelectorAll(
+      ".filter-btn"
+    )
+    .forEach(
+      button => {
 
-        btn.classList.add("active");
+        button.addEventListener(
+          "click",
+          () => {
 
-        currentFilter = btn.dataset.filter;
+            document
+              .querySelectorAll(
+                ".filter-btn"
+              )
+              .forEach(
+                b =>
+                  b.classList.remove(
+                    "active"
+                  )
+              );
 
-        renderRightPanel();
-      });
-    });
+            button.classList.add(
+              "active"
+            );
 
-  initializeClassSelect();
+            currentFilter =
+              button.dataset.filter;
+
+            renderRightPanel();
+          }
+        );
+      }
+    );
+
+  classSelect.value =
+    currentClass;
+
   renderAll();
+
 </script>
 
 </body>
