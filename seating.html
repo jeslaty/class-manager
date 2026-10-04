@@ -24,6 +24,10 @@
       color: #1e293b;
     }
 
+    body.auth-checking {
+      visibility: hidden;
+    }
+
     button {
       font: inherit;
     }
@@ -37,7 +41,7 @@
     .topbar {
       display: flex;
       justify-content: space-between;
-      align-items: center;
+      align-items: flex-start;
       gap: 16px;
       margin-bottom: 20px;
     }
@@ -54,14 +58,46 @@
       font-size: 14px;
     }
 
+    .top-actions {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 8px;
+    }
+
+    .account-box {
+      border: 1px solid #d8dee9;
+      background: white;
+      border-radius: 10px;
+      padding: 8px 12px;
+      color: #64748b;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .action-row {
+      display: flex;
+      gap: 8px;
+    }
+
     .back-btn {
       border: 1px solid #cbd5e1;
       background: white;
       color: #334155;
-      padding: 10px 16px;
+      padding: 9px 14px;
       border-radius: 10px;
       cursor: pointer;
       font-weight: 700;
+    }
+
+    .logout-btn {
+      border: 1px solid #ffc7d6;
+      background: #fff1f5;
+      color: #be123c;
+      padding: 9px 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 800;
     }
 
     .container {
@@ -382,22 +418,31 @@
       }
     }
 
-    @media (max-width: 600px) {
+    @media (max-width: 650px) {
       .page {
         padding: 12px;
       }
 
       .topbar {
-        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .top-actions {
+        width: 100%;
+        align-items: stretch;
+      }
+
+      .account-box {
+        text-align: center;
+      }
+
+      .action-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
       }
 
       .title-group h1 {
         font-size: 25px;
-      }
-
-      .back-btn {
-        padding: 8px 10px;
-        font-size: 13px;
       }
 
       .student-grid {
@@ -420,9 +465,9 @@
     @media print {
       .left-panel,
       .btn-group,
-      .back-btn,
+      .top-actions,
       .status-box,
-      .topbar p {
+      .title-group p {
         display: none !important;
       }
 
@@ -484,24 +529,49 @@
   </style>
 </head>
 
-<body>
+<body class="auth-checking">
 
 <div class="page">
 
   <div class="topbar">
+
     <div class="title-group">
       <h1>🪑 801 班級座位表</h1>
       <p>拖曳排位・隨機安排・儲存座位・列印</p>
     </div>
 
-    <button class="back-btn" onclick="window.location.href='index.html'">
-      🏠 返回主控台
-    </button>
+    <div class="top-actions">
+
+      <div class="account-box">
+        👤 <span id="userEmail">確認登入中...</span>
+      </div>
+
+      <div class="action-row">
+
+        <button
+          class="back-btn"
+          onclick="window.location.href='index.html'"
+        >
+          🏠 返回主控台
+        </button>
+
+        <button
+          id="logoutButton"
+          class="logout-btn"
+        >
+          🚪 登出
+        </button>
+
+      </div>
+
+    </div>
+
   </div>
 
   <div class="container">
 
     <aside class="panel left-panel">
+
       <div class="panel-title">
         🎒 待安排學生
       </div>
@@ -512,6 +582,7 @@
         可直接將學生拖曳到右側座位。<br>
         已入座學生也可以再次拖曳更換位置。
       </div>
+
     </aside>
 
     <main class="panel right-panel">
@@ -566,8 +637,7 @@
       <div
         id="statusBox"
         class="status-box"
-      >
-      </div>
+      ></div>
 
       <div class="cadre-section">
 
@@ -588,8 +658,7 @@
           class="cadre-grid-top"
           id="cadreTopGrid"
           style="display:none;"
-        >
-        </div>
+        ></div>
 
       </div>
 
@@ -605,14 +674,12 @@
       <div
         class="grid-container"
         id="gridHeader"
-      >
-      </div>
+      ></div>
 
       <div
         class="grid-container"
         id="gridSeats"
-      >
-      </div>
+      ></div>
 
       <div
         id="bottomPodium"
@@ -627,6 +694,7 @@
   </div>
 
 </div>
+
 
 <script>
   const studentsData = [
@@ -690,13 +758,14 @@
     { cadre: "生科小老師", id: 20, name: "林柏辰" },
     { cadre: "本土語小老師", id: 26, name: "董子以" },
     { cadre: "美感幾何", id: 22, name: "陳正澤" },
-    { cadre: "世地小老師", id: 23, name: "陳秉玄" }
+    { cadre: "協助小老師", id: 23, name: "陳秉玄" }
   ];
 
   let seatsMap = {};
   let isTeacherView = true;
 
-  const STORAGE_KEY = "801-seat-map";
+  const STORAGE_KEY =
+    "801-seat-map";
 
   function init() {
     renderTopCadres();
@@ -707,13 +776,21 @@
 
   function showStatus(message) {
     const box =
-      document.getElementById("statusBox");
+      document.getElementById(
+        "statusBox"
+      );
 
-    box.textContent = message;
-    box.classList.add("show");
+    box.textContent =
+      message;
+
+    box.classList.add(
+      "show"
+    );
 
     setTimeout(() => {
-      box.classList.remove("show");
+      box.classList.remove(
+        "show"
+      );
     }, 2500);
   }
 
@@ -728,12 +805,20 @@
         "toggleIcon"
       );
 
-    if (grid.style.display === "none") {
-      grid.style.display = "grid";
+    if (
+      grid.style.display ===
+      "none"
+    ) {
+      grid.style.display =
+        "grid";
+
       icon.textContent =
         "🔼 點擊收合";
+
     } else {
-      grid.style.display = "none";
+      grid.style.display =
+        "none";
+
       icon.textContent =
         "🔽 點擊展開";
     }
@@ -773,12 +858,17 @@
 
     const assignedIds =
       new Set(
-        Object.values(seatsMap)
+        Object.values(
+          seatsMap
+        )
       );
 
     const unassigned =
       studentsData.filter(
-        s => !assignedIds.has(s.id)
+        s =>
+          !assignedIds.has(
+            s.id
+          )
       );
 
     if (
@@ -789,41 +879,50 @@
           🎉 全班同學皆已指派入座
         </div>
       `;
+
       return;
     }
 
-    unassigned.forEach(student => {
+    unassigned.forEach(
+      student => {
 
-      const card =
-        document.createElement("div");
+        const card =
+          document.createElement(
+            "div"
+          );
 
-      card.className =
-        "student-card";
+        card.className =
+          "student-card";
 
-      card.draggable = true;
+        card.draggable =
+          true;
 
-      card.innerHTML = `
-        <span>
-          ${student.id}號
-          ${student.name}
-        </span>
+        card.innerHTML = `
+          <span>
+            ${student.id}號
+            ${student.name}
+          </span>
 
-        <span style="opacity:.4;">
-          ⋮⋮
-        </span>
-      `;
+          <span style="opacity:.4;">
+            ⋮⋮
+          </span>
+        `;
 
-      card.ondragstart =
-        event => {
-          event.dataTransfer
-            .setData(
-              "text/plain",
-              student.id
-            );
-        };
+        card.ondragstart =
+          event => {
 
-      pool.appendChild(card);
-    });
+            event.dataTransfer
+              .setData(
+                "text/plain",
+                student.id
+              );
+          };
+
+        pool.appendChild(
+          card
+        );
+      }
+    );
   }
 
   function renderGrid() {
@@ -837,8 +936,11 @@
         "gridSeats"
       );
 
-    headerContainer.innerHTML = "";
-    seatsContainer.innerHTML = "";
+    headerContainer.innerHTML =
+      "";
+
+    seatsContainer.innerHTML =
+      "";
 
     for (
       let c = 0;
@@ -876,20 +978,22 @@
             : 5 - c;
 
         const box =
-          document.createElement("div");
+          document.createElement(
+            "div"
+          );
 
         if (
           realC === 5 &&
           r >= 3
         ) {
+
           box.className =
             "seat-box walkway";
 
           box.innerHTML =
             "🚫 走道";
-        }
 
-        else {
+        } else {
 
           const posKey =
             `${r}_${realC}`;
@@ -902,13 +1006,15 @@
             const student =
               studentsData.find(
                 s =>
-                  s.id === studentId
+                  s.id ===
+                  studentId
               );
 
             box.className =
               "seat-box seat-occupied";
 
-            box.draggable = true;
+            box.draggable =
+              true;
 
             box.innerHTML = `
               <div class="seat-id">
@@ -922,6 +1028,7 @@
 
             box.ondragstart =
               event => {
+
                 event.dataTransfer
                   .setData(
                     "text/plain",
@@ -929,9 +1036,7 @@
                   );
               };
 
-          }
-
-          else {
+          } else {
 
             box.className =
               "seat-box";
@@ -954,6 +1059,7 @@
 
           box.ondragover =
             event => {
+
               event.preventDefault();
 
               box.classList.add(
@@ -963,6 +1069,7 @@
 
           box.ondragleave =
             () => {
+
               box.classList.remove(
                 "drag-over"
               );
@@ -991,15 +1098,19 @@
 
               Object.keys(
                 seatsMap
-              ).forEach(key => {
+              ).forEach(
+                key => {
 
-                if (
-                  seatsMap[key] ===
-                  droppedId
-                ) {
-                  delete seatsMap[key];
+                  if (
+                    seatsMap[key] ===
+                    droppedId
+                  ) {
+                    delete seatsMap[
+                      key
+                    ];
+                  }
                 }
-              });
+              );
 
               seatsMap[posKey] =
                 droppedId;
@@ -1010,7 +1121,9 @@
         }
 
         seatsContainer
-          .appendChild(box);
+          .appendChild(
+            box
+          );
       }
     });
   }
@@ -1050,7 +1163,8 @@
       [...studentsData]
         .sort(
           () =>
-            Math.random() - 0.5
+            Math.random() -
+            0.5
         );
 
     let index = 0;
@@ -1060,6 +1174,7 @@
       r < 5;
       r++
     ) {
+
       for (
         let c = 0;
         c < 6;
@@ -1077,6 +1192,7 @@
           index <
           shuffled.length
         ) {
+
           seatsMap[
             `${r}_${c}`
           ] =
@@ -1118,7 +1234,9 @@
   function saveSeats() {
     localStorage.setItem(
       STORAGE_KEY,
-      JSON.stringify(seatsMap)
+      JSON.stringify(
+        seatsMap
+      )
     );
 
     showStatus(
@@ -1129,6 +1247,7 @@
   function loadSeats(
     showMessage = true
   ) {
+
     const raw =
       localStorage.getItem(
         STORAGE_KEY
@@ -1146,6 +1265,7 @@
     }
 
     try {
+
       seatsMap =
         JSON.parse(raw);
 
@@ -1159,13 +1279,96 @@
       }
 
     } catch {
+
       showStatus(
         "⚠️ 儲存資料讀取失敗。"
       );
     }
   }
 
-  window.onload = init;
+  window.onload =
+    init;
+</script>
+
+
+<script type="module">
+
+  import {
+    auth
+  } from "./firebase-config.js";
+
+  import {
+    onAuthStateChanged,
+    signOut
+  } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+
+
+  const userEmail =
+    document.getElementById(
+      "userEmail"
+    );
+
+  const logoutButton =
+    document.getElementById(
+      "logoutButton"
+    );
+
+
+  onAuthStateChanged(
+    auth,
+    user => {
+
+      if (!user) {
+
+        window.location.replace(
+          "login.html"
+        );
+
+        return;
+      }
+
+      userEmail.textContent =
+        user.email || "已登入";
+
+      document.body.classList.remove(
+        "auth-checking"
+      );
+    }
+  );
+
+
+  logoutButton.addEventListener(
+    "click",
+    async () => {
+
+      const confirmed =
+        confirm(
+          "確定要登出班級管理系統嗎？"
+        );
+
+      if (!confirmed) {
+        return;
+      }
+
+      try {
+
+        await signOut(auth);
+
+        window.location.replace(
+          "login.html"
+        );
+
+      } catch (error) {
+
+        console.error(error);
+
+        alert(
+          "登出失敗，請重新整理後再試。"
+        );
+      }
+    }
+  );
+
 </script>
 
 </body>
