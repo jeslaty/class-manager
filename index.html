@@ -2,21 +2,14 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8">
-
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>班級經營主控台</title>
 
-  <!-- PWA -->
   <link rel="manifest" href="manifest.json">
-
-  <!-- iPhone / iPad App icon -->
   <link rel="apple-touch-icon" href="app-icon.png">
 
-  <!-- Browser theme color -->
   <meta name="theme-color" content="#f8f7ff">
-
-  <!-- iPhone standalone app mode -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="班級主控台">
@@ -29,8 +22,10 @@
     body {
       margin: 0;
       font-family:
-        Arial,
-        "Noto Sans TC",
+        -apple-system,
+        BlinkMacSystemFont,
+        "SF Pro TC",
+        "PingFang TC",
         "Microsoft JhengHei",
         sans-serif;
 
@@ -53,66 +48,45 @@
     }
 
     .hero {
-      background: rgba(255, 255, 255, 0.82);
-
+      background: rgba(255, 255, 255, 0.86);
       border-radius: 28px;
-
       padding: 34px 24px;
-
       text-align: center;
-
-      box-shadow:
-        0 8px 28px rgba(80, 70, 120, 0.08);
-
+      box-shadow: 0 8px 28px rgba(80, 70, 120, 0.08);
       margin-bottom: 28px;
     }
 
     .hero h1 {
       margin: 0;
-
       font-size: 42px;
-
       font-weight: 800;
-
       letter-spacing: 1px;
     }
 
     .hero p {
       margin: 14px 0 0;
-
       font-size: 18px;
-
       color: #64748b;
     }
 
     .grid {
       display: grid;
-
-      grid-template-columns:
-        repeat(3, 1fr);
-
+      grid-template-columns: repeat(3, 1fr);
       gap: 20px;
     }
 
     .card {
       min-height: 230px;
-
       border-radius: 26px;
-
       padding: 28px 20px;
 
       display: flex;
-
       flex-direction: column;
-
       justify-content: center;
-
       align-items: center;
 
       text-align: center;
-
       text-decoration: none;
-
       color: #334155;
 
       transition: 0.2s ease;
@@ -121,112 +95,92 @@
         0 8px 24px rgba(90, 80, 130, 0.08);
 
       border: 2px solid transparent;
-
       cursor: pointer;
     }
 
     .card:hover {
       transform: translateY(-4px);
-
       box-shadow:
         0 14px 32px rgba(90, 80, 130, 0.13);
     }
 
     .card.disabled {
       opacity: 0.62;
-
       cursor: default;
     }
 
     .card.disabled:hover {
       transform: none;
-
       box-shadow:
         0 8px 24px rgba(90, 80, 130, 0.08);
     }
 
     .pink {
       background: #fff1f5;
-
       border-color: #ffc9d8;
     }
 
     .blue {
       background: #eef7ff;
-
       border-color: #b9e1ff;
     }
 
     .purple {
       background: #f4f0ff;
-
       border-color: #d8ccff;
     }
 
     .icon {
       font-size: 54px;
-
       margin-bottom: 22px;
     }
 
     .card h2 {
       margin: 0;
-
       font-size: 27px;
-
       font-weight: 800;
     }
 
     .card p {
       margin: 12px 0 0;
-
       font-size: 16px;
-
       color: #64748b;
-
       font-weight: 600;
     }
 
-    .coming-soon {
+    .status-badge {
       display: inline-block;
-
-      margin-top: 12px;
-
-      padding: 5px 10px;
-
+      margin-top: 13px;
+      padding: 5px 11px;
       border-radius: 999px;
-
-      background: rgba(255, 255, 255, 0.72);
-
-      color: #64748b;
-
       font-size: 12px;
+      font-weight: 800;
+    }
 
-      font-weight: 700;
+    .ready {
+      background: rgba(220, 252, 231, 0.9);
+      color: #166534;
+    }
+
+    .soon {
+      background: rgba(255, 255, 255, 0.75);
+      color: #64748b;
     }
 
     .footer {
       margin-top: 34px;
-
       background: rgba(255, 255, 255, 0.86);
-
       border: 1px solid #d8dee9;
-
       border-radius: 14px;
-
       padding: 14px;
-
       text-align: center;
-
       color: #475569;
-
       font-size: 15px;
     }
 
     @media (max-width: 900px) {
       .grid {
-        grid-template-columns:
-          repeat(2, 1fr);
+        grid-template-columns: repeat(2, 1fr);
       }
 
       .hero h1 {
@@ -241,7 +195,6 @@
 
       .hero {
         padding: 28px 18px;
-
         border-radius: 22px;
       }
 
@@ -255,19 +208,16 @@
 
       .grid {
         grid-template-columns: 1fr;
-
         gap: 14px;
       }
 
       .card {
         min-height: 170px;
-
         border-radius: 20px;
       }
 
       .icon {
         font-size: 44px;
-
         margin-bottom: 14px;
       }
 
@@ -287,12 +237,10 @@
   <div class="page">
 
     <section class="hero">
-      <h1>
-        🏫 班級經營主控台
-      </h1>
+      <h1>🏫 班級經營主控台</h1>
 
       <p>
-        點擊下方功能，即可快速進入管理系統
+        點擊下方功能，即可快速進入班級管理系統
       </p>
     </section>
 
@@ -314,13 +262,16 @@
         <p>
           家長簽名・生活札記・歷史追蹤
         </p>
+
+        <span class="status-badge ready">
+          ✅ 可使用
+        </span>
       </a>
 
       <!-- 作業登記 -->
       <a
-        href="#"
-        class="card blue disabled"
-        onclick="return false;"
+        href="homework.html"
+        class="card blue"
       >
         <div class="icon">
           📚
@@ -331,19 +282,18 @@
         </h2>
 
         <p>
-          801・903・904・906
+          801・903・904・906 班級管理
         </p>
 
-        <span class="coming-soon">
-          準備移植
+        <span class="status-badge ready">
+          ✅ 可使用
         </span>
       </a>
 
       <!-- 座位表 -->
       <a
-        href="#"
-        class="card purple disabled"
-        onclick="return false;"
+        href="seating.html"
+        class="card purple"
       >
         <div class="icon">
           🪑
@@ -354,11 +304,11 @@
         </h2>
 
         <p>
-          排座位・列印・視角切換
+          拖曳排位・隨機安排・列印
         </p>
 
-        <span class="coming-soon">
-          準備移植
+        <span class="status-badge ready">
+          ✅ 可使用
         </span>
       </a>
 
@@ -380,12 +330,12 @@
           課堂互動・提問
         </p>
 
-        <span class="coming-soon">
+        <span class="status-badge soon">
           尚未開發
         </span>
       </a>
 
-      <!-- 倒數計時 -->
+      <!-- 倒數 -->
       <a
         href="#"
         class="card pink disabled"
@@ -403,7 +353,7 @@
           段考・倒數提醒
         </p>
 
-        <span class="coming-soon">
+        <span class="status-badge soon">
           尚未開發
         </span>
       </a>
@@ -426,7 +376,7 @@
           未來可擴充
         </p>
 
-        <span class="coming-soon">
+        <span class="status-badge soon">
           預留
         </span>
       </a>
