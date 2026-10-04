@@ -25,6 +25,10 @@
       color: #1e293b;
     }
 
+    body.auth-checking {
+      visibility: hidden;
+    }
+
     button,
     input,
     select {
@@ -40,7 +44,7 @@
     .topbar {
       display: flex;
       justify-content: space-between;
-      align-items: center;
+      align-items: flex-start;
       gap: 16px;
       margin-bottom: 20px;
     }
@@ -57,14 +61,46 @@
       font-size: 14px;
     }
 
+    .top-actions {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 8px;
+    }
+
+    .account-box {
+      border: 1px solid #d8dee9;
+      background: white;
+      border-radius: 10px;
+      padding: 8px 12px;
+      color: #64748b;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .action-row {
+      display: flex;
+      gap: 8px;
+    }
+
     .back-btn {
       border: 1px solid #cbd5e1;
       background: white;
       color: #334155;
-      padding: 10px 16px;
+      padding: 9px 14px;
       border-radius: 10px;
       cursor: pointer;
       font-weight: 700;
+    }
+
+    .logout-btn {
+      border: 1px solid #ffc7d6;
+      background: #fff1f5;
+      color: #be123c;
+      padding: 9px 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 800;
     }
 
     .layout {
@@ -345,22 +381,31 @@
       }
     }
 
-    @media (max-width: 600px) {
+    @media (max-width: 650px) {
       .page {
         padding: 12px;
       }
 
       .topbar {
-        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .top-actions {
+        width: 100%;
+        align-items: stretch;
+      }
+
+      .account-box {
+        text-align: center;
+      }
+
+      .action-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
       }
 
       .title-group h1 {
         font-size: 25px;
-      }
-
-      .back-btn {
-        padding: 8px 10px;
-        font-size: 13px;
       }
 
       .student-grid {
@@ -383,7 +428,7 @@
   </style>
 </head>
 
-<body>
+<body class="auth-checking">
 
 <div class="page">
 
@@ -394,12 +439,31 @@
       <p>班級切換・作業項目・繳交狀態</p>
     </div>
 
-    <button
-      class="back-btn"
-      onclick="window.location.href='index.html'"
-    >
-      🏠 返回主控台
-    </button>
+    <div class="top-actions">
+
+      <div class="account-box">
+        👤 <span id="userEmail">確認登入中...</span>
+      </div>
+
+      <div class="action-row">
+
+        <button
+          class="back-btn"
+          onclick="window.location.href='index.html'"
+        >
+          🏠 返回主控台
+        </button>
+
+        <button
+          id="logoutButton"
+          class="logout-btn"
+        >
+          🚪 登出
+        </button>
+
+      </div>
+
+    </div>
 
   </div>
 
@@ -545,6 +609,7 @@
 
 </div>
 
+
 <script>
 
   const CLASSES = {
@@ -675,7 +740,9 @@
   let currentFilter = "all";
 
   const classSelect =
-    document.getElementById("classSelect");
+    document.getElementById(
+      "classSelect"
+    );
 
   function classStorageKey(className) {
     return `homework-data-${className}`;
@@ -762,8 +829,7 @@
     });
 
     const homework = {
-      id:
-        Date.now().toString(),
+      id: Date.now().toString(),
       title,
       submissions
     };
@@ -1132,41 +1198,15 @@
         <div class="status-buttons">
 
           <button
-            class="
-              status-btn
-              paid
-              ${
-                paid
-                  ? "active"
-                  : ""
-              }
-            "
-            onclick="
-              setSubmission(
-                ${student.id},
-                true
-              )
-            "
+            class="status-btn paid ${paid ? "active" : ""}"
+            onclick="setSubmission(${student.id}, true)"
           >
             ✅ 已繳
           </button>
 
           <button
-            class="
-              status-btn
-              unpaid
-              ${
-                !paid
-                  ? "active"
-                  : ""
-              }
-            "
-            onclick="
-              setSubmission(
-                ${student.id},
-                false
-              )
-            "
+            class="status-btn unpaid ${!paid ? "active" : ""}"
+            onclick="setSubmission(${student.id}, false)"
           >
             ❌ 未繳
           </button>
@@ -1298,6 +1338,87 @@
     currentClass;
 
   renderAll();
+
+</script>
+
+
+<script type="module">
+
+  import {
+    auth
+  } from "./firebase-config.js";
+
+  import {
+    onAuthStateChanged,
+    signOut
+  } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+
+
+  const userEmail =
+    document.getElementById(
+      "userEmail"
+    );
+
+  const logoutButton =
+    document.getElementById(
+      "logoutButton"
+    );
+
+
+  onAuthStateChanged(
+    auth,
+    user => {
+
+      if (!user) {
+
+        window.location.replace(
+          "login.html"
+        );
+
+        return;
+      }
+
+      userEmail.textContent =
+        user.email || "已登入";
+
+      document.body.classList.remove(
+        "auth-checking"
+      );
+    }
+  );
+
+
+  logoutButton.addEventListener(
+    "click",
+    async () => {
+
+      const confirmed =
+        confirm(
+          "確定要登出班級管理系統嗎？"
+        );
+
+      if (!confirmed) {
+        return;
+      }
+
+      try {
+
+        await signOut(auth);
+
+        window.location.replace(
+          "login.html"
+        );
+
+      } catch (error) {
+
+        console.error(error);
+
+        alert(
+          "登出失敗，請重新整理後再試。"
+        );
+      }
+    }
+  );
 
 </script>
 
