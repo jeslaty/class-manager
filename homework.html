@@ -13,6 +13,7 @@
 
     body {
       margin: 0;
+
       font-family:
         -apple-system,
         BlinkMacSystemFont,
@@ -76,6 +77,28 @@
       color: #64748b;
       font-size: 13px;
       font-weight: 700;
+    }
+
+    .sync-box {
+      border: 1px solid #bbf7d0;
+      background: #f0fdf4;
+      border-radius: 10px;
+      padding: 7px 11px;
+      color: #15803d;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .sync-box.syncing {
+      border-color: #bfdbfe;
+      background: #eff6ff;
+      color: #1d4ed8;
+    }
+
+    .sync-box.error {
+      border-color: #fecaca;
+      background: #fef2f2;
+      color: #b91c1c;
     }
 
     .action-row {
@@ -172,6 +195,11 @@
 
     .primary-btn:hover {
       background: #4338ca;
+    }
+
+    .primary-btn:disabled {
+      opacity: 0.55;
+      cursor: wait;
     }
 
     .divider {
@@ -395,7 +423,8 @@
         align-items: stretch;
       }
 
-      .account-box {
+      .account-box,
+      .sync-box {
         text-align: center;
       }
 
@@ -443,6 +472,10 @@
 
       <div class="account-box">
         👤 <span id="userEmail">確認登入中...</span>
+      </div>
+
+      <div id="syncBox" class="sync-box syncing">
+        ☁️ 連線中...
       </div>
 
       <div class="action-row">
@@ -498,8 +531,8 @@
         >
 
         <button
+          id="addHomeworkButton"
           class="primary-btn"
-          onclick="addHomework()"
         >
           ✨ 建立作業項目
         </button>
@@ -610,7 +643,28 @@
 </div>
 
 
-<script>
+<script type="module">
+
+  import {
+    auth,
+    db,
+    authReady
+  } from "./firebase-config.js";
+
+  import {
+    onAuthStateChanged,
+    signOut
+  } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+
+  import {
+    collection,
+    doc,
+    getDoc,
+    getDocs,
+    setDoc,
+    serverTimestamp
+  } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
+
 
   const CLASSES = {
 
@@ -735,134 +789,416 @@
     ]
   };
 
+
   let currentClass = "801班";
   let currentHomeworkId = null;
   let currentFilter = "all";
+  let currentUser = null;
+  let homeworksCache = [];
+
 
   const classSelect =
-    document.getElementById(
-      "classSelect"
-    );
+    document.getElementById("classSelect");
 
-  function classStorageKey(className) {
-    return `homework-data-${className}`;
-  }
+  const newHomeworkInput =
+    document.getElementById("newHomeworkInput");
 
-  function loadClassData(className) {
+  const addHomeworkButton =
+    document.getElementById("addHomeworkButton");
 
-    const raw =
-      localStorage.getItem(
-        classStorageKey(className)
+  const homeworkList =
+    document.getElementById("homeworkList");
+
+  const unfinishedList =
+    document.getElementById("unfinishedList");
+
+  const classTitle =
+    document.getElementById("classTitle");
+
+  const homeworkTitle =
+    document.getElementById("homeworkTitle");
+
+  const classTag =
+    document.getElementById("classTag");
+
+  const studentGrid =
+    document.getElementById("studentGrid");
+
+  const paidCount =
+    document.getElementById("paidCount");
+
+  const unpaidCount =
+    document.getElementById("unpaidCount");
+
+  const totalCount =
+    document.getElementById("totalCount");
+
+  const userEmail =
+    document.getElementById("userEmail");
+
+  const syncBox =
+    document.getElementById("syncBox");
+
+  const logoutButton =
+    document.getElementById("logoutButton");
+
+
+  function setSyncStatus(type, text) {
+
+    syncBox.className =
+      "sync-box";
+
+    if (type === "syncing") {
+      syncBox.classList.add(
+        "syncing"
       );
-
-    if (raw) {
-      try {
-        return JSON.parse(raw);
-      } catch (error) {
-        console.error(error);
-      }
     }
 
-    return {
-      homeworks: []
-    };
+    if (type === "error") {
+      syncBox.classList.add(
+        "error"
+      );
+    }
+
+    syncBox.textContent =
+      text;
   }
 
-  function saveClassData(
-    className,
-    data
+
+  function getClassCode(
+    className
   ) {
-    localStorage.setItem(
-      classStorageKey(className),
-      JSON.stringify(data)
+    return className.replace(
+      "班",
+      ""
     );
   }
+
+
+  function homeworkCollectionRef(
+    className
+  ) {
+    return collection(
+      db,
+      "classes",
+      getClassCode(className),
+      "homeworks"
+    );
+  }
+
+
+  function homeworkDocRef(
+    className,
+    homeworkId
+  ) {
+    return doc(
+      db,
+      "classes",
+      getClassCode(className),
+      "homeworks",
+      homeworkId
+    );
+  }
+
 
   function getStudents() {
+
     return CLASSES[currentClass]
-      .map(([id, name]) => ({
-        id,
-        name
-      }));
+      .map(
+        ([id, name]) => ({
+          id,
+          name
+        })
+      );
   }
 
-  function addHomework() {
 
-    const input =
-      document.getElementById(
-        "newHomeworkInput"
+  function createEmptySubmissions(
+    className
+  ) {
+
+    const submissions = {};
+
+    CLASSES[className]
+      .forEach(
+        ([id]) => {
+          submissions[id] = false;
+        }
       );
 
-    const title =
-      input.value.trim();
+    return submissions;
+  }
 
-    if (!title) {
-      alert("請輸入作業名稱。");
-      return;
-    }
 
-    const data =
-      loadClassData(
-        currentClass
-      );
-
-    const duplicated =
-      data.homeworks.some(
-        hw => hw.title === title
-      );
-
-    if (duplicated) {
-      alert(
-        "這個作業名稱已經存在。"
-      );
-      return;
-    }
+  function normalizeSubmissions(
+    homework
+  ) {
 
     const students =
       getStudents();
 
-    const submissions = {};
+    if (!homework.submissions) {
+      homework.submissions = {};
+    }
 
     students.forEach(student => {
-      submissions[student.id] =
-        false;
+
+      if (
+        typeof homework.submissions[
+          student.id
+        ] !== "boolean"
+      ) {
+        homework.submissions[
+          student.id
+        ] = false;
+      }
     });
 
-    const homework = {
-      id: Date.now().toString(),
-      title,
-      submissions
-    };
-
-    data.homeworks.push(
-      homework
-    );
-
-    saveClassData(
-      currentClass,
-      data
-    );
-
-    currentHomeworkId =
-      homework.id;
-
-    input.value = "";
-
-    renderAll();
+    return homework;
   }
 
-  function setSubmission(
+
+  async function loadClassData(
+    className
+  ) {
+
+    setSyncStatus(
+      "syncing",
+      `☁️ 正在讀取 ${className}...`
+    );
+
+    try {
+
+      const snapshot =
+        await getDocs(
+          homeworkCollectionRef(
+            className
+          )
+        );
+
+      homeworksCache = [];
+
+      snapshot.forEach(
+        docSnap => {
+
+          const data =
+            docSnap.data();
+
+          homeworksCache.push({
+            id: docSnap.id,
+            title:
+              data.title ||
+              "未命名作業",
+            submissions:
+              data.submissions ||
+              {},
+            createdAtMs:
+              data.createdAtMs ||
+              Number(docSnap.id) ||
+              0
+          });
+        }
+      );
+
+
+      homeworksCache.sort(
+        (a, b) =>
+          a.createdAtMs -
+          b.createdAtMs
+      );
+
+
+      homeworksCache.forEach(
+        homework => {
+          normalizeSubmissions(
+            homework
+          );
+        }
+      );
+
+
+      if (
+        currentHomeworkId &&
+        !homeworksCache.some(
+          homework =>
+            homework.id ===
+            currentHomeworkId
+        )
+      ) {
+        currentHomeworkId =
+          null;
+      }
+
+
+      setSyncStatus(
+        "ok",
+        "☁️ 雲端資料已同步"
+      );
+
+      renderAll();
+
+    } catch (error) {
+
+      console.error(error);
+
+      homeworksCache = [];
+
+      setSyncStatus(
+        "error",
+        "⚠️ 雲端讀取失敗"
+      );
+
+      renderAll();
+
+      alert(
+        `${className} 作業資料讀取失敗，請確認網路連線後再試。`
+      );
+    }
+  }
+
+
+  async function addHomework() {
+
+    const title =
+      newHomeworkInput
+        .value
+        .trim();
+
+    if (!title) {
+
+      alert(
+        "請輸入作業名稱。"
+      );
+
+      return;
+    }
+
+
+    const duplicated =
+      homeworksCache.some(
+        homework =>
+          homework.title ===
+          title
+      );
+
+    if (duplicated) {
+
+      alert(
+        "這個作業名稱已經存在。"
+      );
+
+      return;
+    }
+
+
+    addHomeworkButton.disabled =
+      true;
+
+    setSyncStatus(
+      "syncing",
+      "☁️ 正在建立作業..."
+    );
+
+
+    const createdAtMs =
+      Date.now();
+
+    const homeworkId =
+      createdAtMs.toString();
+
+    const newHomework = {
+      id: homeworkId,
+      title,
+      submissions:
+        createEmptySubmissions(
+          currentClass
+        ),
+      createdAtMs
+    };
+
+
+    try {
+
+      await setDoc(
+        homeworkDocRef(
+          currentClass,
+          homeworkId
+        ),
+        {
+          title:
+            newHomework.title,
+
+          submissions:
+            newHomework.submissions,
+
+          createdAtMs:
+            newHomework.createdAtMs,
+
+          createdAt:
+            serverTimestamp(),
+
+          updatedAt:
+            serverTimestamp(),
+
+          updatedBy:
+            currentUser?.email ||
+            ""
+        }
+      );
+
+
+      homeworksCache.push(
+        newHomework
+      );
+
+      homeworksCache.sort(
+        (a, b) =>
+          a.createdAtMs -
+          b.createdAtMs
+      );
+
+
+      currentHomeworkId =
+        homeworkId;
+
+      newHomeworkInput.value =
+        "";
+
+      setSyncStatus(
+        "ok",
+        "☁️ 已儲存到雲端"
+      );
+
+      renderAll();
+
+    } catch (error) {
+
+      console.error(error);
+
+      setSyncStatus(
+        "error",
+        "⚠️ 建立作業失敗"
+      );
+
+      alert(
+        "作業沒有成功建立，請確認網路連線後再試。"
+      );
+
+    } finally {
+
+      addHomeworkButton.disabled =
+        false;
+    }
+  }
+
+
+  async function setSubmission(
     studentId,
     paid
   ) {
 
-    const data =
-      loadClassData(
-        currentClass
-      );
-
     const homework =
-      data.homeworks.find(
+      homeworksCache.find(
         hw =>
           hw.id ===
           currentHomeworkId
@@ -872,59 +1208,89 @@
       return;
     }
 
+
+    const oldValue =
+      homework.submissions[
+        studentId
+      ] === true;
+
+
     homework.submissions[
       studentId
     ] = paid;
 
-    saveClassData(
-      currentClass,
-      data
-    );
 
     renderRightPanel();
     renderHomeworkList();
+
+
+    setSyncStatus(
+      "syncing",
+      "☁️ 正在儲存..."
+    );
+
+
+    try {
+
+      await setDoc(
+        homeworkDocRef(
+          currentClass,
+          homework.id
+        ),
+        {
+          title:
+            homework.title,
+
+          submissions:
+            homework.submissions,
+
+          createdAtMs:
+            homework.createdAtMs,
+
+          updatedAt:
+            serverTimestamp(),
+
+          updatedBy:
+            currentUser?.email ||
+            ""
+        },
+        {
+          merge: true
+        }
+      );
+
+
+      setSyncStatus(
+        "ok",
+        "☁️ 已儲存到雲端"
+      );
+
+    } catch (error) {
+
+      console.error(error);
+
+
+      homework.submissions[
+        studentId
+      ] = oldValue;
+
+
+      renderRightPanel();
+      renderHomeworkList();
+
+
+      setSyncStatus(
+        "error",
+        "⚠️ 儲存失敗"
+      );
+
+
+      alert(
+        "繳交狀態沒有成功存到雲端，請確認網路連線後再試。"
+      );
+    }
   }
 
-  function getCurrentHomework() {
-
-    const data =
-      loadClassData(
-        currentClass
-      );
-
-    const existing =
-      data.homeworks.find(
-        hw =>
-          hw.id ===
-          currentHomeworkId
-      );
-
-    if (existing) {
-      return existing;
-    }
-
-    const unfinished =
-      data.homeworks.find(
-        hw =>
-          !homeworkCompleted(hw)
-      );
-
-    const fallback =
-      unfinished ||
-      data.homeworks[0];
-
-    if (fallback) {
-      currentHomeworkId =
-        fallback.id;
-
-      return fallback;
-    }
-
-    currentHomeworkId =
-      null;
-
-    return null;
-  }
 
   function homeworkCompleted(
     homework
@@ -941,25 +1307,63 @@
     );
   }
 
+
+  function getCurrentHomework() {
+
+    const existing =
+      homeworksCache.find(
+        homework =>
+          homework.id ===
+          currentHomeworkId
+      );
+
+    if (existing) {
+      return existing;
+    }
+
+
+    const unfinished =
+      homeworksCache.find(
+        homework =>
+          !homeworkCompleted(
+            homework
+          )
+      );
+
+
+    const fallback =
+      unfinished ||
+      homeworksCache[0];
+
+
+    if (fallback) {
+
+      currentHomeworkId =
+        fallback.id;
+
+      return fallback;
+    }
+
+
+    currentHomeworkId =
+      null;
+
+    return null;
+  }
+
+
   function renderHomeworkList() {
 
-    const container =
-      document.getElementById(
-        "homeworkList"
-      );
+    homeworkList.innerHTML =
+      "";
 
-    const data =
-      loadClassData(
-        currentClass
-      );
-
-    container.innerHTML = "";
 
     if (
-      data.homeworks.length === 0
+      homeworksCache.length ===
+      0
     ) {
 
-      container.innerHTML = `
+      homeworkList.innerHTML = `
         <div
           style="
             color:#64748b;
@@ -973,10 +1377,12 @@
       return;
     }
 
+
     const active = [];
     const completed = [];
 
-    data.homeworks.forEach(
+
+    homeworksCache.forEach(
       homework => {
 
         if (
@@ -984,10 +1390,13 @@
             homework
           )
         ) {
+
           completed.push(
             homework
           );
+
         } else {
+
           active.push(
             homework
           );
@@ -995,10 +1404,12 @@
       }
     );
 
+
     const ordered = [
       ...active,
       ...completed
     ];
+
 
     ordered.forEach(
       homework => {
@@ -1011,24 +1422,29 @@
         button.className =
           "homework-btn";
 
+
         if (
           homework.id ===
           currentHomeworkId
         ) {
+
           button.classList.add(
             "active"
           );
         }
+
 
         if (
           homeworkCompleted(
             homework
           )
         ) {
+
           button.classList.add(
             "completed"
           );
         }
+
 
         button.textContent =
           `${
@@ -1039,19 +1455,26 @@
               : "📘"
           } ${homework.title}`;
 
-        button.onclick = () => {
-          currentHomeworkId =
-            homework.id;
 
-          renderAll();
-        };
+        button.addEventListener(
+          "click",
+          () => {
 
-        container.appendChild(
+            currentHomeworkId =
+              homework.id;
+
+            renderAll();
+          }
+        );
+
+
+        homeworkList.appendChild(
           button
         );
       }
     );
   }
+
 
   function renderRightPanel() {
 
@@ -1061,28 +1484,10 @@
     const homework =
       getCurrentHomework();
 
-    const classTitle =
-      document.getElementById(
-        "classTitle"
-      );
-
-    const homeworkTitle =
-      document.getElementById(
-        "homeworkTitle"
-      );
-
-    const classTag =
-      document.getElementById(
-        "classTag"
-      );
-
-    const grid =
-      document.getElementById(
-        "studentGrid"
-      );
 
     classTitle.textContent =
       `📋 ${currentClass} 作業登記`;
+
 
     if (
       currentClass ===
@@ -1104,30 +1509,25 @@
         "class-tag tag-teaching";
     }
 
+
     if (!homework) {
 
       homeworkTitle.textContent =
         "請先新增作業項目";
 
-      document.getElementById(
-        "paidCount"
-      ).textContent = "0";
+      paidCount.textContent =
+        "0";
 
-      document.getElementById(
-        "unpaidCount"
-      ).textContent = "0";
+      unpaidCount.textContent =
+        "0";
 
-      document.getElementById(
-        "totalCount"
-      ).textContent =
+      totalCount.textContent =
         students.length;
 
-      document.getElementById(
-        "unfinishedList"
-      ).textContent =
+      unfinishedList.textContent =
         "請先新增或選擇作業。";
 
-      grid.innerHTML = `
+      studentGrid.innerHTML = `
         <div class="empty-state">
           目前尚未建立作業項目。
         </div>
@@ -1136,110 +1536,161 @@
       return;
     }
 
+
     homeworkTitle.textContent =
       `目前作業：${homework.title}`;
 
-    let paidCount = 0;
+
+    let paidNumber = 0;
 
     const unpaidStudents = [];
 
-    grid.innerHTML = "";
+    studentGrid.innerHTML = "";
 
-    students.forEach(student => {
 
-      const paid =
-        homework.submissions[
-          student.id
-        ] === true;
+    students.forEach(
+      student => {
 
-      if (paid) {
-        paidCount++;
-      } else {
-        unpaidStudents.push(
-          student
-        );
-      }
+        const paid =
+          homework.submissions[
+            student.id
+          ] === true;
 
-      if (
-        currentFilter ===
-          "unpaid" &&
-        paid
-      ) {
-        return;
-      }
 
-      if (
-        currentFilter ===
-          "paid" &&
-        !paid
-      ) {
-        return;
-      }
+        if (paid) {
 
-      const card =
-        document.createElement(
-          "div"
-        );
+          paidNumber++;
 
-      card.className =
-        "student-card" +
-        (
+        } else {
+
+          unpaidStudents.push(
+            student
+          );
+        }
+
+
+        if (
+          currentFilter ===
+            "unpaid" &&
           paid
-            ? ""
-            : " unpaid"
+        ) {
+          return;
+        }
+
+
+        if (
+          currentFilter ===
+            "paid" &&
+          !paid
+        ) {
+          return;
+        }
+
+
+        const card =
+          document.createElement(
+            "div"
+          );
+
+        card.className =
+          "student-card" +
+          (
+            paid
+              ? ""
+              : " unpaid"
+          );
+
+
+        card.innerHTML = `
+          <div class="student-name">
+            ${student.id}號
+            ${student.name}
+          </div>
+
+          <div class="status-buttons">
+
+            <button
+              class="status-btn paid ${
+                paid
+                  ? "active"
+                  : ""
+              }"
+              data-student-id="${student.id}"
+              data-paid="true"
+            >
+              ✅ 已繳
+            </button>
+
+            <button
+              class="status-btn unpaid ${
+                !paid
+                  ? "active"
+                  : ""
+              }"
+              data-student-id="${student.id}"
+              data-paid="false"
+            >
+              ❌ 未繳
+            </button>
+
+          </div>
+        `;
+
+
+        studentGrid.appendChild(
+          card
         );
+      }
+    );
 
-      card.innerHTML = `
-        <div class="student-name">
-          ${student.id}號
-          ${student.name}
-        </div>
 
-        <div class="status-buttons">
+    studentGrid
+      .querySelectorAll(
+        "[data-student-id]"
+      )
+      .forEach(
+        button => {
 
-          <button
-            class="status-btn paid ${paid ? "active" : ""}"
-            onclick="setSubmission(${student.id}, true)"
-          >
-            ✅ 已繳
-          </button>
+          button.addEventListener(
+            "click",
+            async () => {
 
-          <button
-            class="status-btn unpaid ${!paid ? "active" : ""}"
-            onclick="setSubmission(${student.id}, false)"
-          >
-            ❌ 未繳
-          </button>
+              const studentId =
+                Number(
+                  button.dataset
+                    .studentId
+                );
 
-        </div>
-      `;
+              const paid =
+                button.dataset
+                  .paid ===
+                "true";
 
-      grid.appendChild(card);
-    });
 
-    document.getElementById(
-      "paidCount"
-    ).textContent =
-      paidCount;
-
-    document.getElementById(
-      "unpaidCount"
-    ).textContent =
-      students.length -
-      paidCount;
-
-    document.getElementById(
-      "totalCount"
-    ).textContent =
-      students.length;
-
-    const unfinishedList =
-      document.getElementById(
-        "unfinishedList"
+              await setSubmission(
+                studentId,
+                paid
+              );
+            }
+          );
+        }
       );
 
+
+    paidCount.textContent =
+      paidNumber;
+
+    unpaidCount.textContent =
+      students.length -
+      paidNumber;
+
+    totalCount.textContent =
+      students.length;
+
+
     if (
-      unpaidStudents.length === 0
+      unpaidStudents.length ===
+      0
     ) {
 
       unfinishedList.innerHTML =
@@ -1257,15 +1708,189 @@
     }
   }
 
+
   function renderAll() {
+
     getCurrentHomework();
+
     renderHomeworkList();
+
     renderRightPanel();
   }
 
+
+  async function migrateClassLocalStorage(
+    className
+  ) {
+
+    const key =
+      `homework-data-${className}`;
+
+    const raw =
+      localStorage.getItem(
+        key
+      );
+
+    if (!raw) {
+      return;
+    }
+
+
+    let localData;
+
+    try {
+
+      localData =
+        JSON.parse(raw);
+
+    } catch (error) {
+
+      console.error(
+        "舊作業資料解析失敗：",
+        error
+      );
+
+      return;
+    }
+
+
+    if (
+      !localData ||
+      !Array.isArray(
+        localData.homeworks
+      ) ||
+      localData.homeworks.length ===
+        0
+    ) {
+      return;
+    }
+
+
+    for (
+      let index = 0;
+      index <
+      localData.homeworks.length;
+      index++
+    ) {
+
+      const homework =
+        localData.homeworks[
+          index
+        ];
+
+      if (
+        !homework ||
+        !homework.title
+      ) {
+        continue;
+      }
+
+
+      const homeworkId =
+        String(
+          homework.id ||
+          (
+            Date.now() +
+            index
+          )
+        );
+
+
+      try {
+
+        const ref =
+          homeworkDocRef(
+            className,
+            homeworkId
+          );
+
+        const remote =
+          await getDoc(ref);
+
+
+        if (
+          remote.exists()
+        ) {
+          continue;
+        }
+
+
+        const createdAtMs =
+          Number(
+            homework.id
+          ) ||
+          (
+            Date.now() +
+            index
+          );
+
+
+        await setDoc(
+          ref,
+          {
+            title:
+              homework.title,
+
+            submissions:
+              homework.submissions ||
+              createEmptySubmissions(
+                className
+              ),
+
+            createdAtMs,
+
+            migratedFromLocalStorage:
+              true,
+
+            updatedAt:
+              serverTimestamp(),
+
+            updatedBy:
+              currentUser?.email ||
+              ""
+          }
+        );
+
+      } catch (error) {
+
+        console.error(
+          `${className} 舊作業搬移失敗：`,
+          error
+        );
+      }
+    }
+  }
+
+
+  async function migrateAllLocalStorage() {
+
+    setSyncStatus(
+      "syncing",
+      "☁️ 正在檢查舊作業資料..."
+    );
+
+
+    for (
+      const className of
+      Object.keys(CLASSES)
+    ) {
+
+      await migrateClassLocalStorage(
+        className
+      );
+    }
+
+
+    setSyncStatus(
+      "ok",
+      "☁️ 雲端資料已同步"
+    );
+  }
+
+
   classSelect.addEventListener(
     "change",
-    function () {
+    async function () {
 
       currentClass =
         this.value;
@@ -1275,6 +1900,7 @@
 
       currentFilter =
         "all";
+
 
       document
         .querySelectorAll(
@@ -1287,6 +1913,7 @@
             )
         );
 
+
       document
         .querySelector(
           '[data-filter="all"]'
@@ -1295,9 +1922,13 @@
           "active"
         );
 
-      renderAll();
+
+      await loadClassData(
+        currentClass
+      );
     }
   );
+
 
   document
     .querySelectorAll(
@@ -1315,18 +1946,21 @@
                 ".filter-btn"
               )
               .forEach(
-                b =>
-                  b.classList.remove(
+                btn =>
+                  btn.classList.remove(
                     "active"
                   )
               );
+
 
             button.classList.add(
               "active"
             );
 
+
             currentFilter =
               button.dataset.filter;
+
 
             renderRightPanel();
           }
@@ -1334,58 +1968,30 @@
       }
     );
 
-  classSelect.value =
-    currentClass;
 
-  renderAll();
-
-</script>
-
-
-<script type="module">
-
-  import {
-    auth
-  } from "./firebase-config.js";
-
-  import {
-    onAuthStateChanged,
-    signOut
-  } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
-
-
-  const userEmail =
-    document.getElementById(
-      "userEmail"
-    );
-
-  const logoutButton =
-    document.getElementById(
-      "logoutButton"
+  addHomeworkButton
+    .addEventListener(
+      "click",
+      addHomework
     );
 
 
-  onAuthStateChanged(
-    auth,
-    user => {
+  newHomeworkInput
+    .addEventListener(
+      "keydown",
+      async event => {
 
-      if (!user) {
+        if (
+          event.key ===
+          "Enter"
+        ) {
 
-        window.location.replace(
-          "login.html"
-        );
+          event.preventDefault();
 
-        return;
+          await addHomework();
+        }
       }
-
-      userEmail.textContent =
-        user.email || "已登入";
-
-      document.body.classList.remove(
-        "auth-checking"
-      );
-    }
-  );
+    );
 
 
   logoutButton.addEventListener(
@@ -1400,6 +2006,7 @@
       if (!confirmed) {
         return;
       }
+
 
       try {
 
@@ -1417,6 +2024,53 @@
           "登出失敗，請重新整理後再試。"
         );
       }
+    }
+  );
+
+
+  classSelect.value =
+    currentClass;
+
+
+  await authReady;
+
+
+  onAuthStateChanged(
+    auth,
+    async user => {
+
+      if (!user) {
+
+        window.location.replace(
+          "login.html"
+        );
+
+        return;
+      }
+
+
+      currentUser =
+        user;
+
+
+      userEmail.textContent =
+        user.email ||
+        "已登入";
+
+
+      document.body
+        .classList
+        .remove(
+          "auth-checking"
+        );
+
+
+      await migrateAllLocalStorage();
+
+
+      await loadClassData(
+        currentClass
+      );
     }
   );
 
