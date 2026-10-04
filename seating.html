@@ -13,6 +13,7 @@
 
     body {
       margin: 0;
+
       font-family:
         -apple-system,
         BlinkMacSystemFont,
@@ -20,6 +21,7 @@
         "PingFang TC",
         "Microsoft JhengHei",
         sans-serif;
+
       background: #f8fafc;
       color: #1e293b;
     }
@@ -75,6 +77,28 @@
       font-weight: 700;
     }
 
+    .sync-box {
+      border: 1px solid #bbf7d0;
+      background: #f0fdf4;
+      border-radius: 10px;
+      padding: 7px 11px;
+      color: #15803d;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .sync-box.syncing {
+      border-color: #bfdbfe;
+      background: #eff6ff;
+      color: #1d4ed8;
+    }
+
+    .sync-box.error {
+      border-color: #fecaca;
+      background: #fef2f2;
+      color: #b91c1c;
+    }
+
     .action-row {
       display: flex;
       gap: 8px;
@@ -111,7 +135,9 @@
       background: white;
       border: 1px solid #e2e8f0;
       border-radius: 16px;
-      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+
+      box-shadow:
+        0 4px 12px rgba(15, 23, 42, 0.05);
     }
 
     .left-panel {
@@ -143,12 +169,15 @@
       border-radius: 10px;
       padding: 9px 10px;
       cursor: grab;
+
       display: flex;
       justify-content: space-between;
       align-items: center;
+
       font-weight: 700;
       font-size: 14px;
       color: #0369a1;
+
       user-select: none;
     }
 
@@ -159,11 +188,15 @@
 
     .all-assigned {
       grid-column: 1 / -1;
+
       text-align: center;
       color: #15803d;
       font-weight: 800;
+
       padding: 20px 5px;
+
       background: #f0fdf4;
+
       border-radius: 10px;
       border: 1px solid #bbf7d0;
     }
@@ -177,12 +210,21 @@
 
     button.action {
       cursor: pointer;
+
       padding: 9px 14px;
+
       border-radius: 9px;
       border: none;
+
       font-weight: 800;
       font-size: 14px;
+
       transition: 0.2s ease;
+    }
+
+    button.action:disabled {
+      opacity: 0.55;
+      cursor: wait;
     }
 
     .btn-primary {
@@ -229,11 +271,17 @@
     .status-box {
       margin-bottom: 14px;
       padding: 10px 12px;
+
       border-radius: 10px;
+
       background: #f8fafc;
+
       border: 1px solid #e2e8f0;
+
       color: #475569;
+
       font-size: 13px;
+
       display: none;
     }
 
@@ -243,9 +291,13 @@
 
     .cadre-section {
       background: #f8fafc;
+
       border: 1px solid #e2e8f0;
+
       border-radius: 12px;
+
       padding: 12px;
+
       margin-bottom: 14px;
     }
 
@@ -253,11 +305,14 @@
       font-weight: 800;
       color: #334155;
       font-size: 15px;
+
       display: flex;
       justify-content: space-between;
       align-items: center;
+
       cursor: pointer;
       user-select: none;
+
       gap: 12px;
     }
 
@@ -270,10 +325,14 @@
 
     .cadre-card-top {
       background: white;
+
       border: 1px solid #e2e8f0;
       border-left: 3px solid #0284c7;
+
       border-radius: 6px;
+
       padding: 5px 6px;
+
       font-size: 12px;
     }
 
@@ -298,25 +357,39 @@
 
     .col-header {
       text-align: center;
+
       background: #e0f2fe;
+
       color: #0284c7;
+
       font-weight: 800;
+
       padding: 7px;
+
       border-radius: 8px;
+
       font-size: 14px;
     }
 
     .seat-box {
       background: #f8fafc;
+
       border: 2px dashed #cbd5e1;
+
       border-radius: 12px;
+
       min-height: 78px;
+
       display: flex;
       flex-direction: column;
+
       justify-content: center;
       align-items: center;
+
       transition: 0.2s ease;
+
       text-align: center;
+
       padding: 5px;
     }
 
@@ -328,8 +401,12 @@
 
     .seat-occupied {
       background: white;
+
       border: 2px solid #38bdf8;
-      box-shadow: 0 2px 4px rgba(15, 23, 42, 0.04);
+
+      box-shadow:
+        0 2px 4px rgba(15, 23, 42, 0.04);
+
       cursor: grab;
     }
 
@@ -357,23 +434,33 @@
     .podium {
       background: #334155;
       color: white;
+
       text-align: center;
+
       padding: 9px;
+
       border-radius: 10px;
+
       font-weight: 800;
+
       margin: 10px 0;
+
       font-size: 14px;
+
       letter-spacing: 1px;
     }
 
     .tip {
       margin-top: 14px;
+
       font-size: 12px;
       line-height: 1.6;
+
       color: #64748b;
     }
 
     @media (max-width: 1100px) {
+
       .container {
         grid-template-columns: 250px 1fr;
       }
@@ -384,6 +471,7 @@
     }
 
     @media (max-width: 800px) {
+
       .container {
         grid-template-columns: 1fr;
       }
@@ -419,6 +507,7 @@
     }
 
     @media (max-width: 650px) {
+
       .page {
         padding: 12px;
       }
@@ -432,7 +521,8 @@
         align-items: stretch;
       }
 
-      .account-box {
+      .account-box,
+      .sync-box {
         text-align: center;
       }
 
@@ -463,6 +553,7 @@
     }
 
     @media print {
+
       .left-panel,
       .btn-group,
       .top-actions,
@@ -512,12 +603,14 @@
 
       .col-header {
         border: 1.5px solid #000;
+
         background: #eee !important;
         color: #000;
       }
 
       .podium {
         border: 1.5px solid #000;
+
         background: #ddd !important;
         color: #000;
       }
@@ -536,21 +629,38 @@
   <div class="topbar">
 
     <div class="title-group">
-      <h1>🪑 801 班級座位表</h1>
-      <p>拖曳排位・隨機安排・儲存座位・列印</p>
+
+      <h1>
+        🪑 801 班級座位表
+      </h1>
+
+      <p>
+        拖曳排位・隨機安排・雲端儲存・列印
+      </p>
+
     </div>
 
     <div class="top-actions">
 
       <div class="account-box">
-        👤 <span id="userEmail">確認登入中...</span>
+        👤
+        <span id="userEmail">
+          確認登入中...
+        </span>
+      </div>
+
+      <div
+        id="syncBox"
+        class="sync-box syncing"
+      >
+        ☁️ 連線中...
       </div>
 
       <div class="action-row">
 
         <button
+          id="backButton"
           class="back-btn"
-          onclick="window.location.href='index.html'"
         >
           🏠 返回主控台
         </button>
@@ -568,6 +678,7 @@
 
   </div>
 
+
   <div class="container">
 
     <aside class="panel left-panel">
@@ -576,75 +687,82 @@
         🎒 待安排學生
       </div>
 
-      <div id="studentPool" class="student-grid"></div>
+      <div
+        id="studentPool"
+        class="student-grid"
+      ></div>
 
       <div class="tip">
         可直接將學生拖曳到右側座位。<br>
-        已入座學生也可以再次拖曳更換位置。
+        已入座學生也可以再次拖曳更換位置。<br><br>
+        排完後請按「💾 儲存目前座位」，才會同步到雲端。
       </div>
 
     </aside>
+
 
     <main class="panel right-panel">
 
       <div class="btn-group">
 
         <button
+          id="randomButton"
           class="action btn-primary"
-          onclick="autoAssign()"
         >
           🎲 一鍵隨機排位
         </button>
 
         <button
+          id="resetButton"
           class="action btn-danger"
-          onclick="resetSeats()"
         >
           🗑️ 清空重置座位
         </button>
 
         <button
+          id="saveButton"
           class="action btn-save"
-          onclick="saveSeats()"
         >
           💾 儲存目前座位
         </button>
 
         <button
+          id="loadButton"
           class="action btn-secondary"
-          onclick="loadSeats()"
         >
-          📂 載入已儲存座位
+          ☁️ 載入雲端座位
         </button>
 
         <button
+          id="printButton"
           class="action btn-success"
-          onclick="window.print()"
         >
           🖨️ 列印座位表
         </button>
 
         <button
+          id="viewButton"
           class="action btn-secondary"
-          onclick="toggleView()"
-          id="viewBtn"
         >
           🔄 切換為學生視角
         </button>
 
       </div>
 
+
       <div
         id="statusBox"
         class="status-box"
       ></div>
 
+
       <div class="cadre-section">
 
         <div
+          id="cadreHeader"
           class="cadre-title-head"
-          onclick="toggleCadres()"
         >
+
           <span>
             🎖️ 801 班級幹部與小老師一覽
           </span>
@@ -652,6 +770,7 @@
           <span id="toggleIcon">
             🔽 點擊展開
           </span>
+
         </div>
 
         <div
@@ -662,6 +781,7 @@
 
       </div>
 
+
       <div
         id="topPodium"
         class="podium"
@@ -671,15 +791,18 @@
         （學生視角：面向講台）
       </div>
 
+
       <div
         class="grid-container"
         id="gridHeader"
       ></div>
 
+
       <div
         class="grid-container"
         id="gridSeats"
       ></div>
+
 
       <div
         id="bottomPodium"
@@ -696,7 +819,29 @@
 </div>
 
 
-<script>
+<script type="module">
+
+  import {
+    auth,
+    db,
+    authReady
+  } from "./firebase-config.js";
+
+
+  import {
+    onAuthStateChanged,
+    signOut
+  } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+
+
+  import {
+    doc,
+    getDoc,
+    setDoc,
+    serverTimestamp
+  } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
+
+
   const studentsData = [
     { id: 1, name: "王喬昕" },
     { id: 2, name: "吳岢曈" },
@@ -728,6 +873,7 @@
     { id: 28, name: "魏辰恩" }
   ];
 
+
   const cadresData = [
     { cadre: "班長", id: 5, name: "林晏以" },
     { cadre: "副班長", id: 3, name: "李巧彤" },
@@ -740,6 +886,7 @@
     { cadre: "輔導股長", id: 12, name: "戴彤竹" },
     { cadre: "事務股長", id: 16, name: "王楷文" },
     { cadre: "食勤股長", id: 24, name: "陳鼎硯" },
+
     { cadre: "國文小老師", id: 11, name: "蔡可琳" },
     { cadre: "英語小老師", id: 27, name: "劉家佑" },
     { cadre: "數學小老師", id: 10, name: "黃榆涵" },
@@ -761,120 +908,228 @@
     { cadre: "協助小老師", id: 23, name: "陳秉玄" }
   ];
 
+
   let seatsMap = {};
   let isTeacherView = true;
+  let currentUser = null;
 
-  const STORAGE_KEY =
+
+  const OLD_LOCAL_STORAGE_KEY =
     "801-seat-map";
 
-  function init() {
-    renderTopCadres();
-    loadSeats(false);
-    renderGrid();
-    renderStudentPool();
+
+  const userEmail =
+    document.getElementById(
+      "userEmail"
+    );
+
+  const syncBox =
+    document.getElementById(
+      "syncBox"
+    );
+
+  const studentPool =
+    document.getElementById(
+      "studentPool"
+    );
+
+  const gridHeader =
+    document.getElementById(
+      "gridHeader"
+    );
+
+  const gridSeats =
+    document.getElementById(
+      "gridSeats"
+    );
+
+  const statusBox =
+    document.getElementById(
+      "statusBox"
+    );
+
+  const cadreTopGrid =
+    document.getElementById(
+      "cadreTopGrid"
+    );
+
+  const toggleIcon =
+    document.getElementById(
+      "toggleIcon"
+    );
+
+  const topPodium =
+    document.getElementById(
+      "topPodium"
+    );
+
+  const bottomPodium =
+    document.getElementById(
+      "bottomPodium"
+    );
+
+  const viewButton =
+    document.getElementById(
+      "viewButton"
+    );
+
+  const saveButton =
+    document.getElementById(
+      "saveButton"
+    );
+
+  const loadButton =
+    document.getElementById(
+      "loadButton"
+    );
+
+
+  function seatingDocRef() {
+
+    return doc(
+      db,
+      "classes",
+      "801",
+      "seating",
+      "current"
+    );
   }
 
-  function showStatus(message) {
-    const box =
-      document.getElementById(
-        "statusBox"
-      );
 
-    box.textContent =
+  function setSyncStatus(
+    type,
+    text
+  ) {
+
+    syncBox.className =
+      "sync-box";
+
+
+    if (
+      type === "syncing"
+    ) {
+      syncBox.classList.add(
+        "syncing"
+      );
+    }
+
+
+    if (
+      type === "error"
+    ) {
+      syncBox.classList.add(
+        "error"
+      );
+    }
+
+
+    syncBox.textContent =
+      text;
+  }
+
+
+  function showStatus(
+    message
+  ) {
+
+    statusBox.textContent =
       message;
 
-    box.classList.add(
+    statusBox.classList.add(
       "show"
     );
 
-    setTimeout(() => {
-      box.classList.remove(
-        "show"
-      );
-    }, 2500);
+
+    setTimeout(
+      () => {
+
+        statusBox.classList.remove(
+          "show"
+        );
+
+      },
+      3000
+    );
   }
 
-  function toggleCadres() {
-    const grid =
-      document.getElementById(
-        "cadreTopGrid"
-      );
 
-    const icon =
-      document.getElementById(
-        "toggleIcon"
-      );
+  function renderCadres() {
+
+    cadreTopGrid.innerHTML =
+      cadresData
+        .map(
+          cadre => `
+            <div class="cadre-card-top">
+
+              <div class="cadre-role">
+                ${cadre.cadre}
+              </div>
+
+              <div class="cadre-name">
+                ${cadre.id}號
+                ${cadre.name}
+              </div>
+
+            </div>
+          `
+        )
+        .join("");
+  }
+
+
+  function toggleCadres() {
 
     if (
-      grid.style.display ===
+      cadreTopGrid.style.display ===
       "none"
     ) {
-      grid.style.display =
+
+      cadreTopGrid.style.display =
         "grid";
 
-      icon.textContent =
+      toggleIcon.textContent =
         "🔼 點擊收合";
 
     } else {
-      grid.style.display =
+
+      cadreTopGrid.style.display =
         "none";
 
-      icon.textContent =
+      toggleIcon.textContent =
         "🔽 點擊展開";
     }
   }
 
-  function renderTopCadres() {
-    const container =
-      document.getElementById(
-        "cadreTopGrid"
-      );
-
-    container.innerHTML =
-      cadresData
-        .map(c => `
-          <div class="cadre-card-top">
-
-            <div class="cadre-role">
-              ${c.cadre}
-            </div>
-
-            <div class="cadre-name">
-              ${c.id}號 ${c.name}
-            </div>
-
-          </div>
-        `)
-        .join("");
-  }
 
   function renderStudentPool() {
-    const pool =
-      document.getElementById(
-        "studentPool"
-      );
 
-    pool.innerHTML = "";
+    studentPool.innerHTML =
+      "";
+
 
     const assignedIds =
       new Set(
         Object.values(
           seatsMap
-        )
+        ).map(Number)
       );
+
 
     const unassigned =
       studentsData.filter(
-        s =>
+        student =>
           !assignedIds.has(
-            s.id
+            student.id
           )
       );
 
+
     if (
-      unassigned.length === 0
+      unassigned.length ===
+      0
     ) {
-      pool.innerHTML = `
+
+      studentPool.innerHTML = `
         <div class="all-assigned">
           🎉 全班同學皆已指派入座
         </div>
@@ -882,6 +1137,7 @@
 
       return;
     }
+
 
     unassigned.forEach(
       student => {
@@ -897,6 +1153,7 @@
         card.draggable =
           true;
 
+
         card.innerHTML = `
           <span>
             ${student.id}號
@@ -908,142 +1165,184 @@
           </span>
         `;
 
-        card.ondragstart =
+
+        card.addEventListener(
+          "dragstart",
           event => {
 
             event.dataTransfer
               .setData(
                 "text/plain",
-                student.id
+                String(
+                  student.id
+                )
               );
-          };
+          }
+        );
 
-        pool.appendChild(
+
+        studentPool.appendChild(
           card
         );
       }
     );
   }
 
+
   function renderGrid() {
-    const headerContainer =
-      document.getElementById(
-        "gridHeader"
-      );
 
-    const seatsContainer =
-      document.getElementById(
-        "gridSeats"
-      );
-
-    headerContainer.innerHTML =
+    gridHeader.innerHTML =
       "";
 
-    seatsContainer.innerHTML =
+    gridSeats.innerHTML =
       "";
+
 
     for (
       let c = 0;
       c < 6;
       c++
     ) {
+
       const colNum =
         isTeacherView
           ? c + 1
           : 6 - c;
 
-      headerContainer.innerHTML += `
-        <div class="col-header">
-          第 ${colNum} 列
-        </div>
-      `;
+
+      const header =
+        document.createElement(
+          "div"
+        );
+
+      header.className =
+        "col-header";
+
+      header.textContent =
+        `第 ${colNum} 列`;
+
+
+      gridHeader.appendChild(
+        header
+      );
     }
+
 
     const rowOrder =
       isTeacherView
         ? [4, 3, 2, 1, 0]
         : [0, 1, 2, 3, 4];
 
-    rowOrder.forEach(r => {
 
-      for (
-        let c = 0;
-        c < 6;
-        c++
-      ) {
+    rowOrder.forEach(
+      row => {
 
-        const realC =
-          isTeacherView
-            ? c
-            : 5 - c;
-
-        const box =
-          document.createElement(
-            "div"
-          );
-
-        if (
-          realC === 5 &&
-          r >= 3
+        for (
+          let column = 0;
+          column < 6;
+          column++
         ) {
 
-          box.className =
-            "seat-box walkway";
+          const realColumn =
+            isTeacherView
+              ? column
+              : 5 - column;
 
-          box.innerHTML =
-            "🚫 走道";
 
-        } else {
+          const box =
+            document.createElement(
+              "div"
+            );
 
-          const posKey =
-            `${r}_${realC}`;
+
+          if (
+            realColumn === 5 &&
+            row >= 3
+          ) {
+
+            box.className =
+              "seat-box walkway";
+
+            box.innerHTML =
+              "🚫 走道";
+
+
+            gridSeats.appendChild(
+              box
+            );
+
+            continue;
+          }
+
+
+          const positionKey =
+            `${row}_${realColumn}`;
+
 
           const studentId =
-            seatsMap[posKey];
+            Number(
+              seatsMap[
+                positionKey
+              ]
+            );
 
-          if (studentId) {
+
+          if (
+            studentId
+          ) {
 
             const student =
               studentsData.find(
-                s =>
-                  s.id ===
+                item =>
+                  item.id ===
                   studentId
               );
 
-            box.className =
-              "seat-box seat-occupied";
 
-            box.draggable =
-              true;
+            if (student) {
 
-            box.innerHTML = `
-              <div class="seat-id">
-                ${student.id} 號
-              </div>
+              box.className =
+                "seat-box seat-occupied";
 
-              <div class="seat-name">
-                ${student.name}
-              </div>
-            `;
+              box.draggable =
+                true;
 
-            box.ondragstart =
-              event => {
 
-                event.dataTransfer
-                  .setData(
-                    "text/plain",
-                    student.id
-                  );
-              };
+              box.innerHTML = `
+                <div class="seat-id">
+                  ${student.id} 號
+                </div>
+
+                <div class="seat-name">
+                  ${student.name}
+                </div>
+              `;
+
+
+              box.addEventListener(
+                "dragstart",
+                event => {
+
+                  event.dataTransfer
+                    .setData(
+                      "text/plain",
+                      String(
+                        student.id
+                      )
+                    );
+                }
+              );
+            }
 
           } else {
 
             box.className =
               "seat-box";
 
+
             box.innerHTML = `
               <div class="seat-id">
-                第 ${r + 1} 排
+                第 ${row + 1} 排
               </div>
 
               <div
@@ -1057,7 +1356,9 @@
             `;
           }
 
-          box.ondragover =
+
+          box.addEventListener(
+            "dragover",
             event => {
 
               event.preventDefault();
@@ -1065,17 +1366,23 @@
               box.classList.add(
                 "drag-over"
               );
-            };
+            }
+          );
 
-          box.ondragleave =
+
+          box.addEventListener(
+            "dragleave",
             () => {
 
               box.classList.remove(
                 "drag-over"
               );
-            };
+            }
+          );
 
-          box.ondrop =
+
+          box.addEventListener(
+            "drop",
             event => {
 
               event.preventDefault();
@@ -1084,17 +1391,26 @@
                 "drag-over"
               );
 
+
               const droppedId =
-                parseInt(
+                Number(
                   event.dataTransfer
                     .getData(
                       "text/plain"
                     )
                 );
 
-              if (!droppedId) {
+
+              if (
+                !droppedId
+              ) {
                 return;
               }
+
+
+              let oldPosition =
+                null;
+
 
               Object.keys(
                 seatsMap
@@ -1102,62 +1418,107 @@
                 key => {
 
                   if (
-                    seatsMap[key] ===
+                    Number(
+                      seatsMap[key]
+                    ) ===
                     droppedId
                   ) {
-                    delete seatsMap[
-                      key
-                    ];
+
+                    oldPosition =
+                      key;
                   }
                 }
               );
 
-              seatsMap[posKey] =
+
+              const existingId =
+                Number(
+                  seatsMap[
+                    positionKey
+                  ]
+                );
+
+
+              if (
+                oldPosition &&
+                existingId &&
+                existingId !==
+                  droppedId
+              ) {
+
+                seatsMap[
+                  oldPosition
+                ] =
+                  existingId;
+
+              } else if (
+                oldPosition
+              ) {
+
+                delete seatsMap[
+                  oldPosition
+                ];
+              }
+
+
+              seatsMap[
+                positionKey
+              ] =
                 droppedId;
+
 
               renderGrid();
               renderStudentPool();
-            };
-        }
 
-        seatsContainer
-          .appendChild(
+
+              showStatus(
+                "✏️ 座位已調整，請記得按「儲存目前座位」。"
+              );
+            }
+          );
+
+
+          gridSeats.appendChild(
             box
           );
+        }
       }
-    });
+    );
   }
 
+
   function toggleView() {
+
     isTeacherView =
       !isTeacherView;
 
-    document.getElementById(
-      "topPodium"
-    ).style.display =
+
+    topPodium.style.display =
       isTeacherView
         ? "none"
         : "block";
 
-    document.getElementById(
-      "bottomPodium"
-    ).style.display =
+
+    bottomPodium.style.display =
       isTeacherView
         ? "block"
         : "none";
 
-    document.getElementById(
-      "viewBtn"
-    ).textContent =
+
+    viewButton.textContent =
       isTeacherView
         ? "🔄 切換為學生視角"
         : "🔄 切換為老師視角";
 
+
     renderGrid();
   }
 
+
   function autoAssign() {
+
     seatsMap = {};
+
 
     const shuffled =
       [...studentsData]
@@ -1167,26 +1528,29 @@
             0.5
         );
 
+
     let index = 0;
 
+
     for (
-      let r = 0;
-      r < 5;
-      r++
+      let row = 0;
+      row < 5;
+      row++
     ) {
 
       for (
-        let c = 0;
-        c < 6;
-        c++
+        let column = 0;
+        column < 6;
+        column++
       ) {
 
         if (
-          c === 5 &&
-          r >= 3
+          column === 5 &&
+          row >= 3
         ) {
           continue;
         }
+
 
         if (
           index <
@@ -1194,7 +1558,7 @@
         ) {
 
           seatsMap[
-            `${r}_${c}`
+            `${row}_${column}`
           ] =
             shuffled[index].id;
 
@@ -1203,122 +1567,458 @@
       }
     }
 
+
     renderGrid();
     renderStudentPool();
 
+
     showStatus(
-      "🎲 已完成隨機排位，記得按「儲存目前座位」。"
+      "🎲 已完成隨機排位，確認後請按「儲存目前座位」。"
     );
   }
 
+
   function resetSeats() {
+
     const confirmed =
       confirm(
-        "確定要清空目前所有座位嗎？"
+        "確定要清空目前畫面上的所有座位嗎？\n\n清空後仍需按「儲存目前座位」，才會更新雲端資料。"
       );
 
-    if (!confirmed) {
+
+    if (
+      !confirmed
+    ) {
       return;
     }
+
 
     seatsMap = {};
 
+
     renderGrid();
     renderStudentPool();
 
+
     showStatus(
-      "🗑️ 已清空目前座位。"
+      "🗑️ 已清空目前座位，尚未儲存到雲端。"
     );
   }
 
-  function saveSeats() {
-    localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify(
-        seatsMap
-      )
+
+  async function saveSeats() {
+
+    saveButton.disabled =
+      true;
+
+
+    setSyncStatus(
+      "syncing",
+      "☁️ 正在儲存座位..."
     );
 
-    showStatus(
-      "💾 座位表已儲存在這台裝置。"
-    );
-  }
-
-  function loadSeats(
-    showMessage = true
-  ) {
-
-    const raw =
-      localStorage.getItem(
-        STORAGE_KEY
-      );
-
-    if (!raw) {
-
-      if (showMessage) {
-        showStatus(
-          "目前尚未儲存任何座位表。"
-        );
-      }
-
-      return;
-    }
 
     try {
 
-      seatsMap =
-        JSON.parse(raw);
+      await setDoc(
+        seatingDocRef(),
+        {
+          className:
+            "801",
 
-      renderGrid();
-      renderStudentPool();
+          seatsMap:
+            seatsMap,
 
-      if (showMessage) {
-        showStatus(
-          "📂 已載入儲存的座位表。"
+          updatedAt:
+            serverTimestamp(),
+
+          updatedBy:
+            currentUser?.email ||
+            ""
+        },
+        {
+          merge: true
+        }
+      );
+
+
+      setSyncStatus(
+        "ok",
+        "☁️ 已儲存到雲端"
+      );
+
+
+      showStatus(
+        "💾 801 座位表已成功儲存到雲端。"
+      );
+
+    } catch (error) {
+
+      console.error(
+        error
+      );
+
+
+      setSyncStatus(
+        "error",
+        "⚠️ 雲端儲存失敗"
+      );
+
+
+      alert(
+        "座位表沒有成功存到雲端，請確認網路連線後再試。"
+      );
+
+    } finally {
+
+      saveButton.disabled =
+        false;
+    }
+  }
+
+
+  async function loadSeats(
+    showMessage = true
+  ) {
+
+    loadButton.disabled =
+      true;
+
+
+    setSyncStatus(
+      "syncing",
+      "☁️ 正在讀取座位..."
+    );
+
+
+    try {
+
+      const snapshot =
+        await getDoc(
+          seatingDocRef()
+        );
+
+
+      if (
+        snapshot.exists()
+      ) {
+
+        const data =
+          snapshot.data();
+
+
+        seatsMap =
+          data.seatsMap ||
+          {};
+
+
+        renderGrid();
+        renderStudentPool();
+
+
+        setSyncStatus(
+          "ok",
+          "☁️ 雲端資料已同步"
+        );
+
+
+        if (
+          showMessage
+        ) {
+
+          showStatus(
+            "☁️ 已載入最新雲端座位表。"
+          );
+        }
+
+      } else {
+
+        seatsMap = {};
+
+
+        renderGrid();
+        renderStudentPool();
+
+
+        setSyncStatus(
+          "ok",
+          "☁️ 尚無雲端座位資料"
+        );
+
+
+        if (
+          showMessage
+        ) {
+
+          showStatus(
+            "目前 Firestore 尚未儲存座位表。"
+          );
+        }
+      }
+
+    } catch (error) {
+
+      console.error(
+        error
+      );
+
+
+      setSyncStatus(
+        "error",
+        "⚠️ 雲端讀取失敗"
+      );
+
+
+      if (
+        showMessage
+      ) {
+
+        alert(
+          "座位表讀取失敗，請確認網路連線後再試。"
         );
       }
 
-    } catch {
+    } finally {
 
-      showStatus(
-        "⚠️ 儲存資料讀取失敗。"
+      loadButton.disabled =
+        false;
+    }
+  }
+
+
+  async function migrateLocalStorage() {
+
+    const localRaw =
+      localStorage.getItem(
+        OLD_LOCAL_STORAGE_KEY
+      );
+
+
+    if (
+      !localRaw
+    ) {
+      return;
+    }
+
+
+    try {
+
+      const remote =
+        await getDoc(
+          seatingDocRef()
+        );
+
+
+      if (
+        remote.exists()
+      ) {
+
+        return;
+      }
+
+
+      const localSeats =
+        JSON.parse(
+          localRaw
+        );
+
+
+      if (
+        !localSeats ||
+        typeof localSeats !==
+          "object"
+      ) {
+        return;
+      }
+
+
+      setSyncStatus(
+        "syncing",
+        "☁️ 正在搬移舊座位資料..."
+      );
+
+
+      await setDoc(
+        seatingDocRef(),
+        {
+          className:
+            "801",
+
+          seatsMap:
+            localSeats,
+
+          migratedFromLocalStorage:
+            true,
+
+          updatedAt:
+            serverTimestamp(),
+
+          updatedBy:
+            currentUser?.email ||
+            ""
+        }
+      );
+
+
+      setSyncStatus(
+        "ok",
+        "☁️ 舊座位已搬到雲端"
+      );
+
+    } catch (error) {
+
+      console.error(
+        "座位資料搬移失敗：",
+        error
       );
     }
   }
 
-  window.onload =
-    init;
-</script>
 
+  document
+    .getElementById(
+      "backButton"
+    )
+    .addEventListener(
+      "click",
+      () => {
 
-<script type="module">
-
-  import {
-    auth
-  } from "./firebase-config.js";
-
-  import {
-    onAuthStateChanged,
-    signOut
-  } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
-
-
-  const userEmail =
-    document.getElementById(
-      "userEmail"
+        window.location.href =
+          "index.html";
+      }
     );
 
-  const logoutButton =
-    document.getElementById(
+
+  document
+    .getElementById(
+      "randomButton"
+    )
+    .addEventListener(
+      "click",
+      autoAssign
+    );
+
+
+  document
+    .getElementById(
+      "resetButton"
+    )
+    .addEventListener(
+      "click",
+      resetSeats
+    );
+
+
+  saveButton
+    .addEventListener(
+      "click",
+      saveSeats
+    );
+
+
+  loadButton
+    .addEventListener(
+      "click",
+      async () => {
+
+        await loadSeats(
+          true
+        );
+      }
+    );
+
+
+  document
+    .getElementById(
+      "printButton"
+    )
+    .addEventListener(
+      "click",
+      () => {
+
+        window.print();
+      }
+    );
+
+
+  viewButton
+    .addEventListener(
+      "click",
+      toggleView
+    );
+
+
+  document
+    .getElementById(
+      "cadreHeader"
+    )
+    .addEventListener(
+      "click",
+      toggleCadres
+    );
+
+
+  document
+    .getElementById(
       "logoutButton"
+    )
+    .addEventListener(
+      "click",
+      async () => {
+
+        const confirmed =
+          confirm(
+            "確定要登出班級管理系統嗎？"
+          );
+
+
+        if (
+          !confirmed
+        ) {
+          return;
+        }
+
+
+        try {
+
+          await signOut(
+            auth
+          );
+
+
+          window.location.replace(
+            "login.html"
+          );
+
+        } catch (error) {
+
+          console.error(
+            error
+          );
+
+
+          alert(
+            "登出失敗，請重新整理後再試。"
+          );
+        }
+      }
     );
+
+
+  renderCadres();
+
+
+  await authReady;
 
 
   onAuthStateChanged(
     auth,
-    user => {
 
-      if (!user) {
+    async user => {
+
+      if (
+        !user
+      ) {
 
         window.location.replace(
           "login.html"
@@ -1326,46 +2026,30 @@
 
         return;
       }
+
+
+      currentUser =
+        user;
+
 
       userEmail.textContent =
-        user.email || "已登入";
+        user.email ||
+        "已登入";
 
-      document.body.classList.remove(
-        "auth-checking"
+
+      document.body
+        .classList
+        .remove(
+          "auth-checking"
+        );
+
+
+      await migrateLocalStorage();
+
+
+      await loadSeats(
+        false
       );
-    }
-  );
-
-
-  logoutButton.addEventListener(
-    "click",
-    async () => {
-
-      const confirmed =
-        confirm(
-          "確定要登出班級管理系統嗎？"
-        );
-
-      if (!confirmed) {
-        return;
-      }
-
-      try {
-
-        await signOut(auth);
-
-        window.location.replace(
-          "login.html"
-        );
-
-      } catch (error) {
-
-        console.error(error);
-
-        alert(
-          "登出失敗，請重新整理後再試。"
-        );
-      }
     }
   );
 
