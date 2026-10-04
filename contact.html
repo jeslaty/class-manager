@@ -24,6 +24,10 @@
       color: #1e293b;
     }
 
+    body.auth-checking {
+      visibility: hidden;
+    }
+
     button,
     input {
       font: inherit;
@@ -38,7 +42,7 @@
     .topbar {
       display: flex;
       justify-content: space-between;
-      align-items: center;
+      align-items: flex-start;
       gap: 16px;
       margin-bottom: 20px;
     }
@@ -55,14 +59,46 @@
       font-size: 15px;
     }
 
+    .top-actions {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 8px;
+    }
+
+    .account-box {
+      border: 1px solid #d8dee9;
+      background: white;
+      border-radius: 10px;
+      padding: 8px 12px;
+      color: #64748b;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .action-row {
+      display: flex;
+      gap: 8px;
+    }
+
     .back-btn {
       border: 1px solid #cbd5e1;
       background: white;
       color: #334155;
-      padding: 10px 16px;
+      padding: 9px 14px;
       border-radius: 10px;
       cursor: pointer;
       font-weight: 700;
+    }
+
+    .logout-btn {
+      border: 1px solid #ffc7d6;
+      background: #fff1f5;
+      color: #be123c;
+      padding: 9px 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 800;
     }
 
     .layout {
@@ -257,11 +293,6 @@
       background: #fffafa;
     }
 
-    .student-card:hover {
-      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
-      transform: translateY(-1px);
-    }
-
     .student-name {
       display: flex;
       justify-content: space-between;
@@ -339,10 +370,6 @@
       padding: 9px;
       cursor: pointer;
       font-weight: 700;
-    }
-
-    .history-btn:hover {
-      background: #e2e8f0;
     }
 
     .history-panel {
@@ -424,22 +451,31 @@
       }
     }
 
-    @media (max-width: 600px) {
+    @media (max-width: 650px) {
       .page {
         padding: 12px;
       }
 
       .topbar {
-        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .top-actions {
+        width: 100%;
+        align-items: stretch;
+      }
+
+      .account-box {
+        text-align: center;
+      }
+
+      .action-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
       }
 
       .title-group h1 {
         font-size: 25px;
-      }
-
-      .back-btn {
-        padding: 8px 10px;
-        font-size: 13px;
       }
 
       .record-row {
@@ -453,22 +489,43 @@
   </style>
 </head>
 
-<body>
+<body class="auth-checking">
 
 <div class="page">
 
   <div class="topbar">
+
     <div class="title-group">
       <h1>📝 801 每日完成紀錄</h1>
       <p>家長簽名・生活札記・歷史追蹤</p>
     </div>
 
-    <button
-      class="back-btn"
-      onclick="window.location.href='index.html'"
-    >
-      🏠 返回主控台
-    </button>
+    <div class="top-actions">
+
+      <div class="account-box">
+        👤 <span id="userEmail">確認登入中...</span>
+      </div>
+
+      <div class="action-row">
+
+        <button
+          class="back-btn"
+          onclick="window.location.href='index.html'"
+        >
+          🏠 返回主控台
+        </button>
+
+        <button
+          id="logoutButton"
+          class="logout-btn"
+        >
+          🚪 登出
+        </button>
+
+      </div>
+
+    </div>
+
   </div>
 
   <div class="layout">
@@ -480,11 +537,7 @@
           今天
         </div>
 
-        <div
-          id="todayDisplay"
-          class="today-date"
-        >
-        </div>
+        <div id="todayDisplay" class="today-date"></div>
       </div>
 
       <div class="record-date-box">
@@ -515,22 +568,14 @@
 
         <div class="summary-card blue">
           <div>家長簽名</div>
-
-          <div
-            id="signedSummary"
-            class="summary-number"
-          >
+          <div id="signedSummary" class="summary-number">
             0 / 28
           </div>
         </div>
 
         <div class="summary-card pink">
           <div>生活札記</div>
-
-          <div
-            id="journalSummary"
-            class="summary-number"
-          >
+          <div id="journalSummary" class="summary-number">
             0 / 28
           </div>
         </div>
@@ -543,24 +588,15 @@
 
       <div class="filter-group">
 
-        <button
-          class="filter-btn active"
-          data-filter="all"
-        >
+        <button class="filter-btn active" data-filter="all">
           👥 全部學生
         </button>
 
-        <button
-          class="filter-btn"
-          data-filter="incomplete"
-        >
+        <button class="filter-btn" data-filter="incomplete">
           ❗ 只看未完成
         </button>
 
-        <button
-          class="filter-btn"
-          data-filter="complete"
-        >
+        <button class="filter-btn" data-filter="complete">
           ✅ 只看全部完成
         </button>
 
@@ -572,10 +608,7 @@
           ❗ 當日未完成
         </div>
 
-        <div
-          id="unfinishedList"
-          class="unfinished-list"
-        >
+        <div id="unfinishedList" class="unfinished-list">
           載入中...
         </div>
 
@@ -599,24 +632,13 @@
 
       </div>
 
-      <div
-        id="studentGrid"
-        class="student-grid"
-      >
-      </div>
+      <div id="studentGrid" class="student-grid"></div>
 
-      <div
-        id="historyPanel"
-        class="history-panel"
-      >
+      <div id="historyPanel" class="history-panel">
 
         <div class="history-header">
 
-          <div
-            id="historyTitle"
-            class="history-title"
-          >
-          </div>
+          <div id="historyTitle" class="history-title"></div>
 
           <button
             class="close-history"
@@ -627,11 +649,7 @@
 
         </div>
 
-        <div
-          id="historyList"
-          class="history-list"
-        >
-        </div>
+        <div id="historyList" class="history-list"></div>
 
       </div>
 
@@ -640,6 +658,7 @@
   </div>
 
 </div>
+
 
 <script>
   const students = [
@@ -677,15 +696,8 @@
 
   function formatDateLocal(date) {
     const year = date.getFullYear();
-
-    const month =
-      String(date.getMonth() + 1)
-        .padStart(2, "0");
-
-    const day =
-      String(date.getDate())
-        .padStart(2, "0");
-
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
   }
 
@@ -693,18 +705,13 @@
     const date = new Date();
 
     date.setHours(12, 0, 0, 0);
-
-    date.setDate(
-      date.getDate() - 1
-    );
+    date.setDate(date.getDate() - 1);
 
     while (
       date.getDay() === 0 ||
       date.getDay() === 6
     ) {
-      date.setDate(
-        date.getDate() - 1
-      );
+      date.setDate(date.getDate() - 1);
     }
 
     return date;
@@ -712,31 +719,16 @@
 
   function getWeekdayText(date) {
     const weekdays = [
-      "日",
-      "一",
-      "二",
-      "三",
-      "四",
-      "五",
-      "六"
+      "日", "一", "二", "三", "四", "五", "六"
     ];
 
-    return weekdays[
-      date.getDay()
-    ];
+    return weekdays[date.getDay()];
   }
 
   function displayDateText(date) {
-    const year =
-      date.getFullYear();
-
-    const month =
-      String(date.getMonth() + 1)
-        .padStart(2, "0");
-
-    const day =
-      String(date.getDate())
-        .padStart(2, "0");
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
 
     return `${year}/${month}/${day}（${getWeekdayText(date)}）`;
   }
@@ -775,10 +767,7 @@
     }
   }
 
-  function saveRecords(
-    date,
-    records
-  ) {
+  function saveRecords(date, records) {
     localStorage.setItem(
       storageKey(date),
       JSON.stringify(records)
@@ -791,41 +780,24 @@
       .value;
   }
 
-  function setStatus(
-    studentId,
-    field,
-    value
-  ) {
-    const date =
-      getCurrentDate();
+  function setStatus(studentId, field, value) {
+    const date = getCurrentDate();
+    const records = loadRecords(date);
 
-    const records =
-      loadRecords(date);
+    records[studentId][field] = value;
 
-    records[studentId][field] =
-      value;
-
-    saveRecords(
-      date,
-      records
-    );
+    saveRecords(date, records);
 
     render();
   }
 
   function isComplete(record) {
-    return (
-      record.signed &&
-      record.journal
-    );
+    return record.signed && record.journal;
   }
 
   function render() {
-    const date =
-      getCurrentDate();
-
-    const records =
-      loadRecords(date);
+    const date = getCurrentDate();
+    const records = loadRecords(date);
 
     const grid =
       document.getElementById(
@@ -841,34 +813,23 @@
 
     students.forEach(student => {
 
-      const record =
-        records[student.id];
+      const record = records[student.id];
 
-      if (record.signed) {
-        signedCount++;
-      }
+      if (record.signed) signedCount++;
+      if (record.journal) journalCount++;
 
-      if (record.journal) {
-        journalCount++;
-      }
-
-      const complete =
-        isComplete(record);
+      const complete = isComplete(record);
 
       if (!complete) {
 
         const problems = [];
 
         if (!record.signed) {
-          problems.push(
-            "家長未簽"
-          );
+          problems.push("家長未簽");
         }
 
         if (!record.journal) {
-          problems.push(
-            "札記未寫"
-          );
+          problems.push("札記未寫");
         }
 
         unfinished.push(
@@ -877,45 +838,34 @@
       }
 
       if (
-        currentFilter ===
-          "incomplete" &&
+        currentFilter === "incomplete" &&
         complete
       ) {
         return;
       }
 
       if (
-        currentFilter ===
-          "complete" &&
+        currentFilter === "complete" &&
         !complete
       ) {
         return;
       }
 
       const card =
-        document.createElement(
-          "div"
-        );
+        document.createElement("div");
 
       card.className =
         "student-card" +
-        (
-          complete
-            ? ""
-            : " incomplete"
-        );
+        (complete ? "" : " incomplete");
 
       card.innerHTML = `
         <div class="student-name">
 
           <strong>
-            ${student.id}號
-            ${student.name}
+            ${student.id}號 ${student.name}
           </strong>
 
-          <span
-            class="status-dot"
-          ></span>
+          <span class="status-dot"></span>
 
         </div>
 
@@ -997,9 +947,7 @@
         "unfinishedList"
       );
 
-    if (
-      unfinished.length === 0
-    ) {
+    if (unfinished.length === 0) {
       unfinishedList.innerHTML =
         "🎉 全班兩項皆完成";
     } else {
@@ -1045,9 +993,7 @@
       }
     }
 
-    return dates
-      .sort()
-      .reverse();
+    return dates.sort().reverse();
   }
 
   function showHistory(studentId) {
@@ -1080,17 +1026,16 @@
 
     historyList.innerHTML = "";
 
-    if (
-      dates.length === 0
-    ) {
+    if (dates.length === 0) {
+
       historyList.innerHTML =
         `<div class="small-note">
           目前尚無紀錄。
         </div>`;
 
-      historyPanel
-        .classList
-        .add("show");
+      historyPanel.classList.add(
+        "show"
+      );
 
       return;
     }
@@ -1103,9 +1048,7 @@
       const record =
         records[studentId];
 
-      if (!record) {
-        return;
-      }
+      if (!record) return;
 
       const item =
         document.createElement(
@@ -1143,19 +1086,17 @@
         </div>
       `;
 
-      historyList
-        .appendChild(item);
+      historyList.appendChild(item);
     });
 
-    historyPanel
-      .classList
-      .add("show");
+    historyPanel.classList.add(
+      "show"
+    );
 
-    historyPanel
-      .scrollIntoView({
-        behavior: "smooth",
-        block: "start"
-      });
+    historyPanel.scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
   }
 
   function closeHistory() {
@@ -1181,10 +1122,11 @@
             .querySelectorAll(
               ".filter-btn"
             )
-            .forEach(b =>
-              b.classList.remove(
-                "active"
-              )
+            .forEach(
+              b =>
+                b.classList.remove(
+                  "active"
+                )
             );
 
           btn.classList.add(
@@ -1229,6 +1171,87 @@
   );
 
   render();
+</script>
+
+
+<script type="module">
+
+  import {
+    auth
+  } from "./firebase-config.js";
+
+  import {
+    onAuthStateChanged,
+    signOut
+  } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+
+
+  const userEmail =
+    document.getElementById(
+      "userEmail"
+    );
+
+  const logoutButton =
+    document.getElementById(
+      "logoutButton"
+    );
+
+
+  onAuthStateChanged(
+    auth,
+    user => {
+
+      if (!user) {
+
+        window.location.replace(
+          "login.html"
+        );
+
+        return;
+      }
+
+      userEmail.textContent =
+        user.email || "已登入";
+
+      document.body.classList.remove(
+        "auth-checking"
+      );
+    }
+  );
+
+
+  logoutButton.addEventListener(
+    "click",
+    async () => {
+
+      const confirmed =
+        confirm(
+          "確定要登出班級管理系統嗎？"
+        );
+
+      if (!confirmed) {
+        return;
+      }
+
+      try {
+
+        await signOut(auth);
+
+        window.location.replace(
+          "login.html"
+        );
+
+      } catch (error) {
+
+        console.error(error);
+
+        alert(
+          "登出失敗，請重新整理後再試。"
+        );
+      }
+    }
+  );
+
 </script>
 
 </body>
