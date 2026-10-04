@@ -13,6 +13,7 @@
 
     body {
       margin: 0;
+
       font-family:
         -apple-system,
         BlinkMacSystemFont,
@@ -20,6 +21,7 @@
         "PingFang TC",
         "Microsoft JhengHei",
         sans-serif;
+
       background: #f8fafc;
       color: #1e293b;
     }
@@ -76,6 +78,28 @@
       font-weight: 700;
     }
 
+    .sync-box {
+      border: 1px solid #bbf7d0;
+      background: #f0fdf4;
+      border-radius: 10px;
+      padding: 7px 11px;
+      color: #15803d;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .sync-box.syncing {
+      border-color: #bfdbfe;
+      background: #eff6ff;
+      color: #1d4ed8;
+    }
+
+    .sync-box.error {
+      border-color: #fecaca;
+      background: #fef2f2;
+      color: #b91c1c;
+    }
+
     .action-row {
       display: flex;
       gap: 8px;
@@ -112,7 +136,9 @@
       background: white;
       border: 1px solid #e2e8f0;
       border-radius: 16px;
-      box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
+
+      box-shadow:
+        0 4px 14px rgba(15, 23, 42, 0.05);
     }
 
     .left-panel {
@@ -465,7 +491,8 @@
         align-items: stretch;
       }
 
-      .account-box {
+      .account-box,
+      .sync-box {
         text-align: center;
       }
 
@@ -506,6 +533,10 @@
         👤 <span id="userEmail">確認登入中...</span>
       </div>
 
+      <div id="syncBox" class="sync-box syncing">
+        ☁️ 連線中...
+      </div>
+
       <div class="action-row">
 
         <button
@@ -533,10 +564,7 @@
     <aside class="panel left-panel">
 
       <div class="today-box">
-        <div class="today-label">
-          今天
-        </div>
-
+        <div class="today-label">今天</div>
         <div id="todayDisplay" class="today-date"></div>
       </div>
 
@@ -641,8 +669,8 @@
           <div id="historyTitle" class="history-title"></div>
 
           <button
+            id="closeHistoryButton"
             class="close-history"
-            onclick="closeHistory()"
           >
             ✕ 關閉
           </button>
@@ -660,7 +688,29 @@
 </div>
 
 
-<script>
+<script type="module">
+
+  import {
+    auth,
+    db,
+    authReady
+  } from "./firebase-config.js";
+
+  import {
+    onAuthStateChanged,
+    signOut
+  } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+
+  import {
+    doc,
+    getDoc,
+    setDoc,
+    collection,
+    getDocs,
+    serverTimestamp
+  } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
+
+
   const students = [
     { id: 1, name: "王喬昕" },
     { id: 2, name: "吳岢曈" },
@@ -692,14 +742,74 @@
     { id: 28, name: "魏辰恩" }
   ];
 
+
   let currentFilter = "all";
+  let currentRecords = {};
+  let currentUser = null;
+
+
+  const dateInput =
+    document.getElementById("dateInput");
+
+  const studentGrid =
+    document.getElementById("studentGrid");
+
+  const signedSummary =
+    document.getElementById("signedSummary");
+
+  const journalSummary =
+    document.getElementById("journalSummary");
+
+  const unfinishedList =
+    document.getElementById("unfinishedList");
+
+  const recordTitle =
+    document.getElementById("recordTitle");
+
+  const historyPanel =
+    document.getElementById("historyPanel");
+
+  const historyTitle =
+    document.getElementById("historyTitle");
+
+  const historyList =
+    document.getElementById("historyList");
+
+  const userEmail =
+    document.getElementById("userEmail");
+
+  const syncBox =
+    document.getElementById("syncBox");
+
+  const logoutButton =
+    document.getElementById("logoutButton");
+
+
+  function setSyncStatus(type, text) {
+    syncBox.className = "sync-box";
+
+    if (type === "syncing") {
+      syncBox.classList.add("syncing");
+    }
+
+    if (type === "error") {
+      syncBox.classList.add("error");
+    }
+
+    syncBox.textContent = text;
+  }
+
 
   function formatDateLocal(date) {
     const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const day = String(date.getDate()).padStart(2, "0");
+    const month =
+      String(date.getMonth() + 1).padStart(2, "0");
+    const day =
+      String(date.getDate()).padStart(2, "0");
+
     return `${year}-${month}-${day}`;
   }
+
 
   function getPreviousWeekday() {
     const date = new Date();
@@ -717,25 +827,25 @@
     return date;
   }
 
+
   function getWeekdayText(date) {
-    const weekdays = [
-      "日", "一", "二", "三", "四", "五", "六"
-    ];
+    const weekdays =
+      ["日", "一", "二", "三", "四", "五", "六"];
 
     return weekdays[date.getDay()];
   }
 
+
   function displayDateText(date) {
     const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const day = String(date.getDate()).padStart(2, "0");
+    const month =
+      String(date.getMonth() + 1).padStart(2, "0");
+    const day =
+      String(date.getDate()).padStart(2, "0");
 
     return `${year}/${month}/${day}（${getWeekdayText(date)}）`;
   }
 
-  function storageKey(date) {
-    return `801-daily-record-${date}`;
-  }
 
   function createDefaultRecord() {
     const obj = {};
@@ -750,61 +860,155 @@
     return obj;
   }
 
-  function loadRecords(date) {
-    const raw =
-      localStorage.getItem(
-        storageKey(date)
-      );
 
-    if (!raw) {
-      return createDefaultRecord();
-    }
-
-    try {
-      return JSON.parse(raw);
-    } catch {
-      return createDefaultRecord();
-    }
-  }
-
-  function saveRecords(date, records) {
-    localStorage.setItem(
-      storageKey(date),
-      JSON.stringify(records)
+  function dailyDocRef(date) {
+    return doc(
+      db,
+      "classes",
+      "801",
+      "dailyRecords",
+      date
     );
   }
 
-  function getCurrentDate() {
-    return document
-      .getElementById("dateInput")
-      .value;
-  }
 
-  function setStatus(studentId, field, value) {
-    const date = getCurrentDate();
-    const records = loadRecords(date);
+  async function loadRecords(date) {
 
-    records[studentId][field] = value;
+    setSyncStatus(
+      "syncing",
+      "☁️ 正在讀取雲端資料..."
+    );
 
-    saveRecords(date, records);
+    try {
+
+      const snapshot =
+        await getDoc(
+          dailyDocRef(date)
+        );
+
+      if (snapshot.exists()) {
+
+        const data =
+          snapshot.data();
+
+        currentRecords =
+          data.records ||
+          createDefaultRecord();
+
+      } else {
+
+        currentRecords =
+          createDefaultRecord();
+      }
+
+      setSyncStatus(
+        "ok",
+        "☁️ 雲端資料已同步"
+      );
+
+    } catch (error) {
+
+      console.error(error);
+
+      currentRecords =
+        createDefaultRecord();
+
+      setSyncStatus(
+        "error",
+        "⚠️ 雲端讀取失敗"
+      );
+
+      alert(
+        "Firestore 資料讀取失敗，請確認網路連線後再試。"
+      );
+    }
 
     render();
   }
 
-  function isComplete(record) {
-    return record.signed && record.journal;
-  }
 
-  function render() {
-    const date = getCurrentDate();
-    const records = loadRecords(date);
+  async function saveRecords(date) {
 
-    const grid =
-      document.getElementById(
-        "studentGrid"
+    setSyncStatus(
+      "syncing",
+      "☁️ 正在儲存..."
+    );
+
+    try {
+
+      await setDoc(
+        dailyDocRef(date),
+        {
+          className: "801",
+          date: date,
+          records: currentRecords,
+          updatedAt: serverTimestamp(),
+          updatedBy:
+            currentUser?.email || ""
+        },
+        {
+          merge: true
+        }
       );
 
-    grid.innerHTML = "";
+      setSyncStatus(
+        "ok",
+        "☁️ 已儲存到雲端"
+      );
+
+    } catch (error) {
+
+      console.error(error);
+
+      setSyncStatus(
+        "error",
+        "⚠️ 儲存失敗"
+      );
+
+      alert(
+        "資料沒有成功存到雲端，請確認網路連線後再試。"
+      );
+    }
+  }
+
+
+  async function setStatus(
+    studentId,
+    field,
+    value
+  ) {
+
+    if (
+      !currentRecords[studentId]
+    ) {
+      currentRecords[studentId] = {
+        signed: true,
+        journal: true
+      };
+    }
+
+    currentRecords[studentId][field] =
+      value;
+
+    render();
+
+    await saveRecords(
+      dateInput.value
+    );
+  }
+
+
+  function isComplete(record) {
+    return (
+      record.signed &&
+      record.journal
+    );
+  }
+
+
+  function render() {
+
+    studentGrid.innerHTML = "";
 
     let signedCount = 0;
     let journalCount = 0;
@@ -813,12 +1017,23 @@
 
     students.forEach(student => {
 
-      const record = records[student.id];
+      const record =
+        currentRecords[student.id] ||
+        {
+          signed: true,
+          journal: true
+        };
 
-      if (record.signed) signedCount++;
-      if (record.journal) journalCount++;
+      if (record.signed) {
+        signedCount++;
+      }
 
-      const complete = isComplete(record);
+      if (record.journal) {
+        journalCount++;
+      }
+
+      const complete =
+        isComplete(record);
 
       if (!complete) {
 
@@ -858,6 +1073,26 @@
         "student-card" +
         (complete ? "" : " incomplete");
 
+      const signedYesClass =
+        record.signed
+          ? "active"
+          : "";
+
+      const signedNoClass =
+        !record.signed
+          ? "active"
+          : "";
+
+      const journalYesClass =
+        record.journal
+          ? "active"
+          : "";
+
+      const journalNoClass =
+        !record.journal
+          ? "active"
+          : "";
+
       card.innerHTML = `
         <div class="student-name">
 
@@ -878,15 +1113,19 @@
           <div class="toggle-group">
 
             <button
-              class="toggle-btn good ${record.signed ? "active" : ""}"
-              onclick="setStatus(${student.id}, 'signed', true)"
+              class="toggle-btn good ${signedYesClass}"
+              data-id="${student.id}"
+              data-field="signed"
+              data-value="true"
             >
               ✅ 已簽
             </button>
 
             <button
-              class="toggle-btn bad ${!record.signed ? "active" : ""}"
-              onclick="setStatus(${student.id}, 'signed', false)"
+              class="toggle-btn bad ${signedNoClass}"
+              data-id="${student.id}"
+              data-field="signed"
+              data-value="false"
             >
               ❌ 未簽
             </button>
@@ -904,15 +1143,19 @@
           <div class="toggle-group">
 
             <button
-              class="toggle-btn good ${record.journal ? "active" : ""}"
-              onclick="setStatus(${student.id}, 'journal', true)"
+              class="toggle-btn good ${journalYesClass}"
+              data-id="${student.id}"
+              data-field="journal"
+              data-value="true"
             >
               ✅ 已寫
             </button>
 
             <button
-              class="toggle-btn bad ${!record.journal ? "active" : ""}"
-              onclick="setStatus(${student.id}, 'journal', false)"
+              class="toggle-btn bad ${journalNoClass}"
+              data-id="${student.id}"
+              data-field="journal"
+              data-value="false"
             >
               ❌ 未寫
             </button>
@@ -923,175 +1166,244 @@
 
         <button
           class="history-btn"
-          onclick="showHistory(${student.id})"
+          data-history-id="${student.id}"
         >
           📜 查看個人紀錄
         </button>
       `;
 
-      grid.appendChild(card);
+      studentGrid.appendChild(card);
     });
 
-    document.getElementById(
-      "signedSummary"
-    ).textContent =
+
+    signedSummary.textContent =
       `${signedCount} / ${students.length}`;
 
-    document.getElementById(
-      "journalSummary"
-    ).textContent =
+    journalSummary.textContent =
       `${journalCount} / ${students.length}`;
 
-    const unfinishedList =
-      document.getElementById(
-        "unfinishedList"
-      );
 
     if (unfinished.length === 0) {
+
       unfinishedList.innerHTML =
         "🎉 全班兩項皆完成";
+
     } else {
+
       unfinishedList.innerHTML =
         unfinished.join("<br>");
     }
 
+
     const selectedDate =
       new Date(
-        date + "T12:00:00"
+        dateInput.value +
+        "T12:00:00"
       );
 
-    document.getElementById(
-      "recordTitle"
-    ).textContent =
+    recordTitle.textContent =
       `📅 ${displayDateText(selectedDate)} 完成紀錄`;
-  }
 
-  function getStoredDates() {
-    const prefix =
-      "801-daily-record-";
 
-    const dates = [];
+    document
+      .querySelectorAll(
+        ".toggle-btn"
+      )
+      .forEach(button => {
 
-    for (
-      let i = 0;
-      i < localStorage.length;
-      i++
-    ) {
-      const key =
-        localStorage.key(i);
+        button.addEventListener(
+          "click",
+          async () => {
 
-      if (
-        key &&
-        key.startsWith(prefix)
-      ) {
-        dates.push(
-          key.replace(
-            prefix,
-            ""
-          )
+            const id =
+              Number(
+                button.dataset.id
+              );
+
+            const field =
+              button.dataset.field;
+
+            const value =
+              button.dataset.value ===
+              "true";
+
+            await setStatus(
+              id,
+              field,
+              value
+            );
+          }
         );
-      }
-    }
+      });
 
-    return dates.sort().reverse();
+
+    document
+      .querySelectorAll(
+        "[data-history-id]"
+      )
+      .forEach(button => {
+
+        button.addEventListener(
+          "click",
+          async () => {
+
+            const id =
+              Number(
+                button.dataset.historyId
+              );
+
+            await showHistory(id);
+          }
+        );
+      });
   }
 
-  function showHistory(studentId) {
+
+  async function showHistory(studentId) {
 
     const student =
       students.find(
-        s => s.id === studentId
-      );
-
-    const dates =
-      getStoredDates();
-
-    const historyPanel =
-      document.getElementById(
-        "historyPanel"
-      );
-
-    const historyTitle =
-      document.getElementById(
-        "historyTitle"
-      );
-
-    const historyList =
-      document.getElementById(
-        "historyList"
+        s =>
+          s.id === studentId
       );
 
     historyTitle.textContent =
       `👤 ${student.id}號 ${student.name}｜歷史紀錄`;
 
-    historyList.innerHTML = "";
-
-    if (dates.length === 0) {
-
-      historyList.innerHTML =
-        `<div class="small-note">
-          目前尚無紀錄。
-        </div>`;
-
-      historyPanel.classList.add(
-        "show"
-      );
-
-      return;
-    }
-
-    dates.forEach(date => {
-
-      const records =
-        loadRecords(date);
-
-      const record =
-        records[studentId];
-
-      if (!record) return;
-
-      const item =
-        document.createElement(
-          "div"
-        );
-
-      item.className =
-        "history-item";
-
-      item.innerHTML = `
-        <div>
-          <strong>
-            ${date}
-          </strong>
-        </div>
-
-        <div
-          class="${record.signed ? "history-good" : "history-bad"}"
-        >
-          ${
-            record.signed
-              ? "✅ 家長已簽"
-              : "❌ 家長未簽"
-          }
-        </div>
-
-        <div
-          class="${record.journal ? "history-good" : "history-bad"}"
-        >
-          ${
-            record.journal
-              ? "✅ 札記已寫"
-              : "❌ 札記未寫"
-          }
-        </div>
-      `;
-
-      historyList.appendChild(item);
-    });
+    historyList.innerHTML =
+      `<div class="small-note">
+        ☁️ 正在讀取歷史紀錄...
+      </div>`;
 
     historyPanel.classList.add(
       "show"
     );
+
+    try {
+
+      const snapshot =
+        await getDocs(
+          collection(
+            db,
+            "classes",
+            "801",
+            "dailyRecords"
+          )
+        );
+
+      const items = [];
+
+      snapshot.forEach(docSnap => {
+
+        const data =
+          docSnap.data();
+
+        const record =
+          data.records?.[studentId];
+
+        if (!record) {
+          return;
+        }
+
+        items.push({
+          date:
+            data.date ||
+            docSnap.id,
+
+          signed:
+            record.signed,
+
+          journal:
+            record.journal
+        });
+      });
+
+
+      items.sort(
+        (a, b) =>
+          b.date.localeCompare(
+            a.date
+          )
+      );
+
+
+      historyList.innerHTML = "";
+
+
+      if (
+        items.length === 0
+      ) {
+
+        historyList.innerHTML =
+          `<div class="small-note">
+            目前尚無雲端歷史紀錄。
+          </div>`;
+
+        return;
+      }
+
+
+      items.forEach(item => {
+
+        const row =
+          document.createElement(
+            "div"
+          );
+
+        row.className =
+          "history-item";
+
+        row.innerHTML = `
+          <div>
+            <strong>
+              ${item.date}
+            </strong>
+          </div>
+
+          <div
+            class="${
+              item.signed
+                ? "history-good"
+                : "history-bad"
+            }"
+          >
+            ${
+              item.signed
+                ? "✅ 家長已簽"
+                : "❌ 家長未簽"
+            }
+          </div>
+
+          <div
+            class="${
+              item.journal
+                ? "history-good"
+                : "history-bad"
+            }"
+          >
+            ${
+              item.journal
+                ? "✅ 札記已寫"
+                : "❌ 札記未寫"
+            }
+          </div>
+        `;
+
+        historyList.appendChild(
+          row
+        );
+      });
+
+    } catch (error) {
+
+      console.error(error);
+
+      historyList.innerHTML =
+        `<div class="history-bad">
+          ⚠️ 無法讀取歷史紀錄。
+        </div>`;
+    }
+
 
     historyPanel.scrollIntoView({
       behavior: "smooth",
@@ -1099,22 +1411,137 @@
     });
   }
 
+
   function closeHistory() {
-    document
-      .getElementById(
-        "historyPanel"
-      )
+    historyPanel
       .classList
       .remove("show");
   }
+
+
+  async function migrateLocalStorage() {
+
+    const prefix =
+      "801-daily-record-";
+
+    const localItems = [];
+
+    for (
+      let i = 0;
+      i < localStorage.length;
+      i++
+    ) {
+
+      const key =
+        localStorage.key(i);
+
+      if (
+        key &&
+        key.startsWith(prefix)
+      ) {
+
+        const date =
+          key.replace(
+            prefix,
+            ""
+          );
+
+        localItems.push({
+          key,
+          date
+        });
+      }
+    }
+
+
+    if (
+      localItems.length === 0
+    ) {
+      return;
+    }
+
+
+    setSyncStatus(
+      "syncing",
+      "☁️ 正在檢查舊紀錄..."
+    );
+
+
+    for (
+      const item of localItems
+    ) {
+
+      try {
+
+        const ref =
+          dailyDocRef(
+            item.date
+          );
+
+        const remote =
+          await getDoc(ref);
+
+        if (
+          remote.exists()
+        ) {
+          continue;
+        }
+
+
+        const raw =
+          localStorage.getItem(
+            item.key
+          );
+
+        if (!raw) {
+          continue;
+        }
+
+
+        const localRecords =
+          JSON.parse(raw);
+
+
+        await setDoc(
+          ref,
+          {
+            className: "801",
+            date: item.date,
+            records:
+              localRecords,
+            migratedFromLocalStorage:
+              true,
+            updatedAt:
+              serverTimestamp(),
+            updatedBy:
+              currentUser?.email || ""
+          }
+        );
+
+      } catch (error) {
+
+        console.error(
+          "Migration error:",
+          error
+        );
+      }
+    }
+
+
+    setSyncStatus(
+      "ok",
+      "☁️ 雲端資料已同步"
+    );
+  }
+
 
   document
     .querySelectorAll(
       ".filter-btn"
     )
-    .forEach(btn => {
+    .forEach(button => {
 
-      btn.addEventListener(
+      button.addEventListener(
         "click",
         () => {
 
@@ -1123,98 +1550,43 @@
               ".filter-btn"
             )
             .forEach(
-              b =>
-                b.classList.remove(
+              btn =>
+                btn.classList.remove(
                   "active"
                 )
             );
 
-          btn.classList.add(
+          button.classList.add(
             "active"
           );
 
           currentFilter =
-            btn.dataset.filter;
+            button.dataset.filter;
 
           render();
         }
       );
     });
 
-  const today =
-    new Date();
 
-  document.getElementById(
-    "todayDisplay"
-  ).textContent =
-    displayDateText(today);
-
-  const previousWeekday =
-    getPreviousWeekday();
-
-  const dateInput =
-    document.getElementById(
-      "dateInput"
+  document
+    .getElementById(
+      "closeHistoryButton"
+    )
+    .addEventListener(
+      "click",
+      closeHistory
     );
 
-  dateInput.value =
-    formatDateLocal(
-      previousWeekday
-    );
 
   dateInput.addEventListener(
     "change",
-    () => {
+    async () => {
+
       closeHistory();
-      render();
-    }
-  );
 
-  render();
-</script>
-
-
-<script type="module">
-
-  import {
-    auth
-  } from "./firebase-config.js";
-
-  import {
-    onAuthStateChanged,
-    signOut
-  } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
-
-
-  const userEmail =
-    document.getElementById(
-      "userEmail"
-    );
-
-  const logoutButton =
-    document.getElementById(
-      "logoutButton"
-    );
-
-
-  onAuthStateChanged(
-    auth,
-    user => {
-
-      if (!user) {
-
-        window.location.replace(
-          "login.html"
-        );
-
-        return;
-      }
-
-      userEmail.textContent =
-        user.email || "已登入";
-
-      document.body.classList.remove(
-        "auth-checking"
+      await loadRecords(
+        dateInput.value
       );
     }
   );
@@ -1249,6 +1621,65 @@
           "登出失敗，請重新整理後再試。"
         );
       }
+    }
+  );
+
+
+  const today =
+    new Date();
+
+  document.getElementById(
+    "todayDisplay"
+  ).textContent =
+    displayDateText(today);
+
+
+  const previousWeekday =
+    getPreviousWeekday();
+
+  dateInput.value =
+    formatDateLocal(
+      previousWeekday
+    );
+
+
+  await authReady;
+
+
+  onAuthStateChanged(
+    auth,
+    async user => {
+
+      if (!user) {
+
+        window.location.replace(
+          "login.html"
+        );
+
+        return;
+      }
+
+
+      currentUser =
+        user;
+
+      userEmail.textContent =
+        user.email || "已登入";
+
+
+      document.body
+        .classList
+        .remove(
+          "auth-checking"
+        );
+
+
+      await migrateLocalStorage();
+
+
+      await loadRecords(
+        dateInput.value
+      );
     }
   );
 
